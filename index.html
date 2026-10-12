@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Studio Karaoke Master Pro</title>
+  <title>Studio Karaoke Master Pro - Concert Hall Edition</title>
   <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; }
@@ -68,7 +68,7 @@
       <button type="button" class="custom-file-btn" id="chooseBtn" aria-label="Select Karaoke Track File">Select Karaoke Track</button>
     </div>
 
-    <!-- Hidden Track Player for rock-solid playback -->
+    <!-- Hidden Track Player -->
     <audio id="karaokeAudioPlayer" preload="auto" style="display:none;"></audio>
 
     <!-- Earphones / Speaker Mode Toggle -->
@@ -99,7 +99,7 @@
       </div>
     </div>
 
-    <!-- Vocal Volume with -50% and +50% Buttons -->
+    <!-- Vocal Volume with -50% and +50% Buttons (Safe Anti-Crack Boost) -->
     <div class="control-group">
       <label>
         <span>Vocal Volume:</span>
@@ -121,13 +121,13 @@
       <input type="range" id="musicVol" min="10" max="100" step="5" value="70" aria-label="Karaoke music volume from 10 to 100 percent">
     </div>
 
-    <!-- 3. Concert Hall Reverb / Echo Slider -->
+    <!-- 3. Concert Hall Reverb / Echo Slider (Expanded 0% to 80% for Ghazal Ambience) -->
     <div class="control-group">
       <label for="echoRange">
-        <span>Concert Hall Reverb:</span>
-        <span id="echoVal" aria-live="polite">6%</span>
+        <span>Concert Hall Echo (Reverb):</span>
+        <span id="echoVal" aria-live="polite">25%</span>
       </label>
-      <input type="range" id="echoRange" min="0" max="40" step="2" value="6" aria-label="Concert hall reverb from 0 to 40 percent">
+      <input type="range" id="echoRange" min="0" max="80" step="5" value="25" aria-label="Concert hall echo and reverb from 0 to 80 percent">
     </div>
 
     <!-- 4. Rhythm Sync / Vocal Offset -->
@@ -155,7 +155,7 @@
     </div>
 
     <div class="tip-box">
-      Tip: Direct Hardware Media Pipeline active. File loading is 100% reliable.
+      Tip: Ghazal Concert Hall Reverb & Anti-Distortion Limiter active. Feel free to raise volume up to 250% without cracking!
     </div>
 
     <!-- Mixing Section -->
@@ -222,12 +222,10 @@
     const offsetVal = document.getElementById('offsetVal');
     const offsetNumDisplay = document.getElementById('offsetNumDisplay');
 
-    // Trigger file chooser directly on button tap
     chooseBtn.addEventListener('click', () => {
       fileInput.click();
     });
 
-    // 100% Reliable File Loader (Instant URL Object, Zero Hang)
     fileInput.addEventListener('change', function() {
       if (!this.files || this.files.length === 0) return;
 
@@ -248,7 +246,6 @@
       currentPitch = parseInt(pitchSemi.value);
       const text = currentPitch === 0 ? "Original (0 st)" : (currentPitch > 0 ? "+" + currentPitch + " st (High)" : currentPitch + " st (Low)");
       pitchVal.innerText = text;
-      // Native audio pitch rate
       karaokeAudioPlayer.playbackRate = Math.pow(2, currentPitch / 12);
     };
 
@@ -391,7 +388,6 @@
           mixBtn.focus();
         };
 
-        // Start track playback
         karaokeAudioPlayer.currentTime = 0;
         await karaokeAudioPlayer.play();
 
@@ -451,20 +447,19 @@
       stopRecordingProcess();
     });
 
-    // Offline Mixing Engine
+    // Offline Mixing Engine (Concert Hall Reverb & Anti-Distortion Limiter)
     mixBtn.addEventListener('click', async () => {
       if (!rawVocalBlob || !selectedFile) {
         alert("Audio data missing.");
         return;
       }
 
-      statusText.innerText = "Decoding files and mixing to MP3 (~3 seconds)...";
+      statusText.innerText = "Applying Ghazal Hall Echo & Master Limiter (~3 seconds)...";
       mixBtn.disabled = true;
 
       try {
         const ctx = getAudioContext();
         
-        // Decode track and vocals in memory
         const trackArrayBuffer = await selectedFile.arrayBuffer();
         const karaokeBuffer = await ctx.decodeAudioData(trackArrayBuffer);
 
@@ -476,14 +471,16 @@
         
         const offlineCtx = new OfflineAudioContext(2, 44100 * totalDuration, 44100);
 
-        const compressor = offlineCtx.createDynamicsCompressor();
-        compressor.threshold.value = -4.0;
-        compressor.knee.value = 12;
-        compressor.ratio.value = 8;
-        compressor.attack.value = 0.015;
-        compressor.release.value = 0.20;
-        compressor.connect(offlineCtx.destination);
+        // 1. MASTER LIMITER (Anti-Clipping Brickwall protection)
+        const masterLimiter = offlineCtx.createDynamicsCompressor();
+        masterLimiter.threshold.value = -1.0; // Keeps everything just below 0dB to prevent ANY crack
+        masterLimiter.knee.value = 0.0;
+        masterLimiter.ratio.value = 20.0;     // Strong limiting ratio
+        masterLimiter.attack.value = 0.001;
+        masterLimiter.release.value = 0.15;
+        masterLimiter.connect(offlineCtx.destination);
 
+        // 2. Karaoke Track Path
         const musicSource = offlineCtx.createBufferSource();
         musicSource.buffer = karaokeBuffer;
         musicSource.detune.value = currentPitch * 100;
@@ -491,62 +488,85 @@
         const musicGain = offlineCtx.createGain();
         musicGain.gain.value = currentMusicVol / 100;
         musicSource.connect(musicGain);
-        musicGain.connect(compressor);
+        musicGain.connect(masterLimiter);
+
+        // 3. Dedicated Vocal Leveler & Compressor (Prevents crack when volume is boosted)
+        const vocalCompressor = offlineCtx.createDynamicsCompressor();
+        vocalCompressor.threshold.value = -8.0;
+        vocalCompressor.knee.value = 10;
+        vocalCompressor.ratio.value = 6;
+        vocalCompressor.attack.value = 0.01;
+        vocalCompressor.release.value = 0.18;
 
         const vocalSource = offlineCtx.createBufferSource();
         vocalSource.buffer = vocalAudioBuffer;
 
+        // Clean Natural Vocal Filtering
         const highPass = offlineCtx.createBiquadFilter();
         highPass.type = "highpass";
         highPass.frequency.value = 90;
 
         const presenceFilter = offlineCtx.createBiquadFilter();
         presenceFilter.type = "peaking";
-        presenceFilter.frequency.value = 4500;
-        presenceFilter.Q.value = 0.7;
-        presenceFilter.gain.value = 2.8;
+        presenceFilter.frequency.value = 4200;
+        presenceFilter.Q.value = 0.8;
+        presenceFilter.gain.value = 2.5;
 
         vocalSource.connect(highPass);
         highPass.connect(presenceFilter);
+        presenceFilter.connect(vocalCompressor);
 
+        // Main Vocal Gain (Safely Scales up to 350%)
         const vocalMasterGain = offlineCtx.createGain();
         vocalMasterGain.gain.value = (parseFloat(currentVocalVol) / 100);
 
+        // Dry Vocal (Direct Throat Presence)
         const dryGain = offlineCtx.createGain();
         dryGain.gain.value = 1.0;
-        presenceFilter.connect(dryGain);
+        vocalCompressor.connect(dryGain);
         dryGain.connect(vocalMasterGain);
 
+        // 4. DEEP CONCERT HALL REVERB & ECHO ENGINE (Ghazal Style)
         const echoPercent = parseFloat(echoRange.value) / 100;
         if (echoPercent > 0.01) {
-          const delay1 = offlineCtx.createDelay();
-          delay1.delayTime.value = 0.09;
+          // Stereo Delay 1 (Left Space)
+          const delayL = offlineCtx.createDelay();
+          delayL.delayTime.value = 0.22; // 220ms hall reflection
 
-          const delay2 = offlineCtx.createDelay();
-          delay2.delayTime.value = 0.16;
+          // Stereo Delay 2 (Right Space)
+          const delayR = offlineCtx.createDelay();
+          delayR.delayTime.value = 0.38; // 380ms deep hall tail
 
-          const reverbFilter = offlineCtx.createBiquadFilter();
-          reverbFilter.type = "lowpass";
-          reverbFilter.frequency.value = 2600;
+          // Warm Hall Tone Filter (Cuts metallic harshness from echo)
+          const hallToneFilter = offlineCtx.createBiquadFilter();
+          hallToneFilter.type = "lowpass";
+          hallToneFilter.frequency.value = 3000;
 
+          const hallHighPass = offlineCtx.createBiquadFilter();
+          hallHighPass.type = "highpass";
+          hallHighPass.frequency.value = 200;
+
+          // Hall Wet Level (Scaled with slider)
           const reverbGain = offlineCtx.createGain();
-          reverbGain.gain.value = echoPercent * 0.28;
+          reverbGain.gain.value = echoPercent * 0.75; 
 
+          // Smooth Decay Feedback
           const feedback = offlineCtx.createGain();
-          feedback.gain.value = 0.14;
+          feedback.gain.value = 0.32; // Rich, lingering tail without runaway screech
 
-          presenceFilter.connect(delay1);
-          delay1.connect(reverbFilter);
-          reverbFilter.connect(delay2);
-          delay2.connect(feedback);
-          feedback.connect(delay1);
+          vocalCompressor.connect(delayL);
+          delayL.connect(hallToneFilter);
+          hallToneFilter.connect(hallHighPass);
+          hallHighPass.connect(delayR);
+          delayR.connect(feedback);
+          feedback.connect(delayL);
 
-          reverbFilter.connect(reverbGain);
-          delay2.connect(reverbGain);
+          hallHighPass.connect(reverbGain);
+          delayR.connect(reverbGain);
           reverbGain.connect(vocalMasterGain);
         }
 
-        vocalMasterGain.connect(compressor);
+        vocalMasterGain.connect(masterLimiter);
 
         musicSource.start(0);
         if (vocalAudioBuffer.duration > latencySec) {
@@ -563,7 +583,7 @@
         finalAudioPlayer.src = finalUrl;
         readySection.style.display = 'block';
         mixBtn.disabled = false;
-        statusText.innerText = "Natural MP3 Ready! Size: ~2.5 MB. Ready to play or download.";
+        statusText.innerText = "Concert Hall MP3 Ready! Size: ~2.5 MB. Ready to play or download.";
         finalAudioPlayer.focus();
       } catch (err) {
         alert("Mixing failed: " + err.message);
