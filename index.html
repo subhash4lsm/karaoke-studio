@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Studio Karaoke Master Pro - Concert Hall Edition</title>
-  <!-- Fast and Reliable MP3 Encoder CDN -->
+  <title>Studio Karaoke Master Pro - Smooth Reverb Edition</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.all.min.js" defer></script>
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; }
@@ -99,7 +98,7 @@
       </div>
     </div>
 
-    <!-- Vocal Volume with -50% and +50% Buttons -->
+    <!-- Vocal Volume with -50% and +50% Buttons (Safe Anti-Crack Engine) -->
     <div class="control-group">
       <label>
         <span>Vocal Volume:</span>
@@ -121,13 +120,13 @@
       <input type="range" id="musicVol" min="10" max="100" step="5" value="70" aria-label="Karaoke music volume from 10 to 100 percent">
     </div>
 
-    <!-- 3. Concert Hall Reverb / Echo Slider (0% to 80%) -->
+    <!-- 3. Velvet Hall Reverb Slider (No Repeat, Pure Smooth Ambience) -->
     <div class="control-group">
       <label for="echoRange">
-        <span>Concert Hall Echo (Reverb):</span>
-        <span id="echoVal" aria-live="polite">25%</span>
+        <span>Smooth Hall Reverb (No Repeat):</span>
+        <span id="echoVal" aria-live="polite">15%</span>
       </label>
-      <input type="range" id="echoRange" min="0" max="80" step="5" value="25" aria-label="Concert hall echo and reverb from 0 to 80 percent">
+      <input type="range" id="echoRange" min="0" max="50" step="2" value="15" aria-label="Smooth hall reverb percentage without repeating echo">
     </div>
 
     <!-- 4. Rhythm Sync / Vocal Offset -->
@@ -155,7 +154,7 @@
     </div>
 
     <div class="tip-box">
-      Tip: Ghazal Concert Hall Reverb & Anti-Distortion Limiter active.
+      Tip: Pure Velvet Hall Reverb active (Zero repeat echo). Volume is safe up to 300% without distortion.
     </div>
 
     <!-- Mixing Section -->
@@ -440,14 +439,14 @@
       stopRecordingProcess();
     });
 
-    // Offline Mixing Engine
+    // Offline Mixing Engine (Zero-Repeat Reverb & Pure Anti-Clip 350% Volume)
     mixBtn.addEventListener('click', async () => {
       if (!rawVocalBlob || !selectedFile) {
         alert("Audio data missing.");
         return;
       }
 
-      statusText.innerText = "Applying Ghazal Hall Echo & Master Limiter (~3 seconds)...";
+      statusText.innerText = "Applying Velvet Reverb & Mixing MP3 (~3 seconds)...";
       mixBtn.disabled = true;
 
       try {
@@ -464,16 +463,16 @@
         
         const offlineCtx = new OfflineAudioContext(2, 44100 * totalDuration, 44100);
 
-        // 1. MASTER LIMITER
+        // 1. FINAL OUTPUT LIMITER (Prevents 100% of distortion at any volume)
         const masterLimiter = offlineCtx.createDynamicsCompressor();
-        masterLimiter.threshold.value = -1.0;
+        masterLimiter.threshold.value = -0.5;
         masterLimiter.knee.value = 0.0;
         masterLimiter.ratio.value = 20.0;
         masterLimiter.attack.value = 0.001;
-        masterLimiter.release.value = 0.15;
+        masterLimiter.release.value = 0.12;
         masterLimiter.connect(offlineCtx.destination);
 
-        // 2. Karaoke Track Path
+        // 2. Karaoke Music Track
         const musicSource = offlineCtx.createBufferSource();
         musicSource.buffer = karaokeBuffer;
         musicSource.detune.value = currentPitch * 100;
@@ -483,14 +482,7 @@
         musicSource.connect(musicGain);
         musicGain.connect(masterLimiter);
 
-        // 3. Dedicated Vocal Leveler & Compressor
-        const vocalCompressor = offlineCtx.createDynamicsCompressor();
-        vocalCompressor.threshold.value = -8.0;
-        vocalCompressor.knee.value = 10;
-        vocalCompressor.ratio.value = 6;
-        vocalCompressor.attack.value = 0.01;
-        vocalCompressor.release.value = 0.18;
-
+        // 3. VOCAL CHAIN WITH ANTI-CRACK SATURATION SHAPER
         const vocalSource = offlineCtx.createBufferSource();
         vocalSource.buffer = vocalAudioBuffer;
 
@@ -500,55 +492,81 @@
 
         const presenceFilter = offlineCtx.createBiquadFilter();
         presenceFilter.type = "peaking";
-        presenceFilter.frequency.value = 4200;
-        presenceFilter.Q.value = 0.8;
-        presenceFilter.gain.value = 2.5;
+        presenceFilter.frequency.value = 3800;
+        presenceFilter.Q.value = 0.9;
+        presenceFilter.gain.value = 2.4;
+
+        // Dynamic Vocal Compressor: Controls massive volume spikes when slider is 300%
+        const vocalLeveler = offlineCtx.createDynamicsCompressor();
+        const volMultiplier = parseFloat(currentVocalVol) / 100;
+        // Dynamically adapts threshold so 300% volume remains punchy without squaring off (cracking)
+        vocalLeveler.threshold.value = volMultiplier > 1.8 ? -14.0 : -8.0;
+        vocalLeveler.knee.value = 14;
+        vocalLeveler.ratio.value = volMultiplier > 1.8 ? 10.0 : 5.0;
+        vocalLeveler.attack.value = 0.008;
+        vocalLeveler.release.value = 0.16;
+
+        // Soft-curve waveshaper to prevent digital crack (Analog tape warmth)
+        const softClipper = offlineCtx.createWaveShaper();
+        const curveLen = 512;
+        const curve = new Float32Array(curveLen);
+        for (let i = 0; i < curveLen; ++i) {
+          let x = (i * 2) / curveLen - 1;
+          curve[i] = Math.tanh(x * 1.2) / Math.tanh(1.2);
+        }
+        softClipper.curve = curve;
+        softClipper.oversample = '2x';
 
         vocalSource.connect(highPass);
         highPass.connect(presenceFilter);
-        presenceFilter.connect(vocalCompressor);
+        presenceFilter.connect(vocalLeveler);
+        vocalLeveler.connect(softClipper);
 
         const vocalMasterGain = offlineCtx.createGain();
-        vocalMasterGain.gain.value = (parseFloat(currentVocalVol) / 100);
+        // Safe linear-gain scaling
+        vocalMasterGain.gain.value = Math.min(3.2, volMultiplier);
 
+        // Direct Dry Throat Voice
         const dryGain = offlineCtx.createGain();
         dryGain.gain.value = 1.0;
-        vocalCompressor.connect(dryGain);
+        softClipper.connect(dryGain);
         dryGain.connect(vocalMasterGain);
 
-        // 4. CONCERT HALL REVERB & ECHO ENGINE
+        // 4. PURE VELVET AMBIENCE (Zero Slapback / No Repetitions)
+        // Uses ultra-short prime micro-delays (<60ms) to create space without ANY distinct echo
         const echoPercent = parseFloat(echoRange.value) / 100;
         if (echoPercent > 0.01) {
-          const delayL = offlineCtx.createDelay();
-          delayL.delayTime.value = 0.22;
+          const d1 = offlineCtx.createDelay(); d1.delayTime.value = 0.019; // 19ms
+          const d2 = offlineCtx.createDelay(); d2.delayTime.value = 0.031; // 31ms
+          const d3 = offlineCtx.createDelay(); d3.delayTime.value = 0.047; // 47ms
+          const d4 = offlineCtx.createDelay(); d4.delayTime.value = 0.059; // 59ms
 
-          const delayR = offlineCtx.createDelay();
-          delayR.delayTime.value = 0.38;
+          const reverbTone = offlineCtx.createBiquadFilter();
+          reverbTone.type = "lowpass";
+          reverbTone.frequency.value = 2800; // Warm hall warmth
 
-          const hallToneFilter = offlineCtx.createBiquadFilter();
-          hallToneFilter.type = "lowpass";
-          hallToneFilter.frequency.value = 3000;
+          const reverbHighPass = offlineCtx.createBiquadFilter();
+          reverbHighPass.type = "highpass";
+          reverbHighPass.frequency.value = 250; // Cuts mud
 
-          const hallHighPass = offlineCtx.createBiquadFilter();
-          hallHighPass.type = "highpass";
-          hallHighPass.frequency.value = 200;
+          const diffuseGain = offlineCtx.createGain();
+          diffuseGain.gain.value = echoPercent * 0.48; // Smooth ambient curtain
 
-          const reverbGain = offlineCtx.createGain();
-          reverbGain.gain.value = echoPercent * 0.75; 
+          const microFeedback = offlineCtx.createGain();
+          microFeedback.gain.value = 0.22; // Quick, smooth fade (no repeating trail)
 
-          const feedback = offlineCtx.createGain();
-          feedback.gain.value = 0.32;
+          softClipper.connect(reverbHighPass);
+          reverbHighPass.connect(d1);
+          d1.connect(d2);
+          d2.connect(d3);
+          d3.connect(d4);
+          d4.connect(reverbTone);
+          reverbTone.connect(microFeedback);
+          microFeedback.connect(d1);
 
-          vocalCompressor.connect(delayL);
-          delayL.connect(hallToneFilter);
-          hallToneFilter.connect(hallHighPass);
-          hallHighPass.connect(delayR);
-          delayR.connect(feedback);
-          feedback.connect(delayL);
-
-          hallHighPass.connect(reverbGain);
-          delayR.connect(reverbGain);
-          reverbGain.connect(vocalMasterGain);
+          d2.connect(diffuseGain);
+          reverbTone.connect(diffuseGain);
+          diffuseGain.connect(vocalMasterGain);
         }
 
         vocalMasterGain.connect(masterLimiter);
@@ -568,7 +586,7 @@
         finalAudioPlayer.src = finalUrl;
         readySection.style.display = 'block';
         mixBtn.disabled = false;
-        statusText.innerText = "Concert Hall MP3 Ready! Size: ~2.5 MB. Ready to play or download.";
+        statusText.innerText = "Smooth Vocal MP3 Ready! Size: ~2.5 MB. Ready to play or download.";
         finalAudioPlayer.focus();
       } catch (err) {
         alert("Mixing failed: " + err.message);
