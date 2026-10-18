@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Studio Karaoke Master Pro - Grand Hall Edition</title>
+  <title>Studio Karaoke Master Pro - Grand Hall & Auto-Tune Edition</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.all.min.js" defer></script>
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; }
@@ -12,9 +12,9 @@
     .card { background: #1e293b; border-radius: 14px; padding: 18px; width: 100%; max-width: 480px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); margin-bottom: 16px; }
     h1 { font-size: 20px; text-align: center; color: #38bdf8; margin-bottom: 14px; }
     
-    .file-input-wrapper { margin-bottom: 14px; }
-    .file-label { display: block; font-size: 14px; color: #38bdf8; font-weight: bold; margin-bottom: 6px; }
-    .file-input-field { width: 100%; padding: 12px; background: #334155; color: #f8fafc; border: 2px solid #38bdf8; border-radius: 8px; font-size: 15px; cursor: pointer; }
+    .file-input-wrapper { margin-bottom: 12px; }
+    .file-label { display: block; font-size: 13.5px; color: #38bdf8; font-weight: bold; margin-bottom: 5px; }
+    .file-input-field { width: 100%; padding: 10px 12px; background: #334155; color: #f8fafc; border: 2px solid #38bdf8; border-radius: 8px; font-size: 14px; cursor: pointer; }
     
     .toggle-row { display: flex; justify-content: space-between; align-items: center; background: #0f172a; padding: 12px 14px; border-radius: 8px; margin-bottom: 14px; border: 1px solid #334155; }
     .toggle-label { font-size: 14px; color: #cbd5e1; font-weight: 500; }
@@ -25,31 +25,36 @@
     input:checked + .slider-toggle { background-color: #10b981; }
     input:checked + .slider-toggle:before { transform: translateX(22px); }
 
-    .control-group { margin-bottom: 14px; background: #0f172a; padding: 12px; border-radius: 8px; border: 1px solid #334155; }
-    .control-group label { display: flex; justify-content: space-between; font-size: 14px; color: #94a3b8; margin-bottom: 8px; font-weight: 500; }
-    input[type="range"] { width: 100%; height: 26px; accent-color: #38bdf8; cursor: pointer; }
+    .control-group { margin-bottom: 12px; background: #0f172a; padding: 11px 12px; border-radius: 8px; border: 1px solid #334155; }
+    .control-group label { display: flex; justify-content: space-between; font-size: 13.5px; color: #94a3b8; margin-bottom: 6px; font-weight: 500; }
+    input[type="range"] { width: 100%; height: 24px; accent-color: #38bdf8; cursor: pointer; }
     
-    .btn-step-row { display: flex; gap: 8px; align-items: center; }
-    .btn-step { background: #334155; color: #f8fafc; border: 1px solid #475569; border-radius: 8px; padding: 12px; font-size: 15px; font-weight: bold; cursor: pointer; flex: 1; text-align: center; }
-    .btn-step:active { background: #475569; }
-    .val-display { min-width: 90px; text-align: center; font-size: 16px; font-weight: bold; color: #38bdf8; }
+    .eq-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 4px; }
+    .eq-col { display: flex; flex-direction: column; align-items: center; background: #1e293b; padding: 6px; border-radius: 6px; }
+    .eq-col span { font-size: 11.5px; color: #cbd5e1; margin-bottom: 4px; font-weight: bold; }
+    .eq-col .eq-val { font-size: 12px; color: #38bdf8; margin-top: 2px; }
 
-    .mic-meter-box { margin-bottom: 14px; background: #0f172a; border-radius: 6px; padding: 8px; border: 1px solid #334155; }
+    .btn-step-row { display: flex; gap: 8px; align-items: center; }
+    .btn-step { background: #334155; color: #f8fafc; border: 1px solid #475569; border-radius: 8px; padding: 10px; font-size: 14px; font-weight: bold; cursor: pointer; flex: 1; text-align: center; }
+    .btn-step:active { background: #475569; }
+    .val-display { min-width: 85px; text-align: center; font-size: 15px; font-weight: bold; color: #38bdf8; }
+
+    .mic-meter-box { margin-bottom: 12px; background: #0f172a; border-radius: 6px; padding: 8px; border: 1px solid #334155; }
     .meter-bar-bg { width: 100%; height: 8px; background: #1e293b; border-radius: 4px; overflow: hidden; }
     .meter-bar-fill { height: 100%; width: 0%; background: #10b981; }
 
-    .timer { text-align: center; font-size: 28px; font-weight: bold; color: #f43f5e; margin: 10px 0; font-variant-numeric: tabular-nums; }
+    .timer { text-align: center; font-size: 26px; font-weight: bold; color: #f43f5e; margin: 8px 0; font-variant-numeric: tabular-nums; }
     
-    .btn-row { display: flex; gap: 8px; margin-top: 12px; }
-    .btn { flex: 1; padding: 14px; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
+    .btn-row { display: flex; gap: 8px; margin-top: 10px; }
+    .btn { flex: 1; padding: 13px; border: none; border-radius: 8px; font-size: 14.5px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
     .btn-rec { background: #e11d48; color: #fff; }
     .btn-stop { background: #64748b; color: #fff; }
     .btn-mix { background: #0284c7; color: #fff; width: 100%; margin-top: 10px; }
     .btn-action { background: #10b981; color: #fff; }
-    .btn-preview { background: #8b5cf6; color: #fff; width: 100%; margin-bottom: 14px; }
+    .btn-preview { background: #8b5cf6; color: #fff; width: 100%; margin-bottom: 12px; }
     .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    .status-text { text-align: center; font-size: 14px; color: #38bdf8; margin-top: 8px; min-height: 22px; line-height: 1.4; font-weight: 500; }
+    .status-text { text-align: center; font-size: 13.5px; color: #38bdf8; margin-top: 8px; min-height: 22px; line-height: 1.4; font-weight: 500; }
     .preview-box { margin-top: 14px; padding-top: 14px; border-top: 1px dashed #334155; display: none; }
     audio { width: 100%; margin-top: 10px; border-radius: 8px; }
     
@@ -63,8 +68,14 @@
     
     <!-- 1. Track File Input -->
     <div class="file-input-wrapper">
-      <label for="karaokeFile" class="file-label">Select Karaoke Track (MP3/WAV):</label>
-      <input type="file" id="karaokeFile" class="file-input-field" aria-label="Choose Karaoke Track File">
+      <label for="karaokeFile" class="file-label">1. Select Karaoke Track (MP3/WAV):</label>
+      <input type="file" id="karaokeFile" class="file-input-field" accept="audio/*">
+    </div>
+
+    <!-- 2. Pre-recorded Vocals Input (Optional) -->
+    <div class="file-input-wrapper">
+      <label for="vocalFile" class="file-label">2. Select Pre-recorded Vocals (Optional):</label>
+      <input type="file" id="vocalFile" class="file-input-field" accept="audio/*" style="border-color:#10b981;">
     </div>
 
     <!-- Hidden Track Player -->
@@ -74,7 +85,7 @@
     <div class="toggle-row">
       <span class="toggle-label" id="modeStatusText">Mode: Mobile Speaker (Anti-Bleed)</span>
       <label class="switch">
-        <input type="checkbox" id="earphoneToggle" aria-label="Toggle Earphone Mode">
+        <input type="checkbox" id="earphoneToggle">
         <span class="slider-toggle"></span>
       </label>
     </div>
@@ -83,16 +94,50 @@
     <div class="control-group">
       <label for="pitchSemi">
         <span>Track Scale (Pitch Shift):</span>
-        <span id="pitchVal" aria-live="polite">Original (0 st)</span>
+        <span id="pitchVal">Original (0 st)</span>
       </label>
-      <input type="range" id="pitchSemi" min="-6" max="6" step="1" value="0" aria-label="Track pitch shift from minus 6 to plus 6 semitones">
+      <input type="range" id="pitchSemi" min="-6" max="6" step="1" value="0">
     </div>
 
     <!-- Scale Preview Button -->
-    <button class="btn btn-preview" id="previewScaleBtn" disabled aria-label="Test scale and play track">Test Scale (Play Track)</button>
+    <button class="btn btn-preview" id="previewScaleBtn" disabled>Test Scale (Play Track)</button>
+
+    <!-- Auto-Tune Pitch Correction Slider (0% to 100%) -->
+    <div class="control-group">
+      <label for="autoTuneRange">
+        <span>Auto-Tune Pitch Correction:</span>
+        <span id="autoTuneVal" style="color:#10b981; font-weight:bold;">0% (Off)</span>
+      </label>
+      <input type="range" id="autoTuneRange" min="0" max="100" step="5" value="0" style="accent-color:#10b981;">
+    </div>
+
+    <!-- 3-Band Vocal EQ (Bass, Mid, Treble) -->
+    <div class="control-group">
+      <label>
+        <span>3-Band Studio Vocal EQ:</span>
+        <span id="eqStatusDisp">Flat (0 dB)</span>
+      </label>
+      <div class="eq-grid">
+        <div class="eq-col">
+          <span>Bass</span>
+          <input type="range" id="eqBass" min="-10" max="10" step="1" value="0">
+          <div class="eq-val" id="bassVal">0 dB</div>
+        </div>
+        <div class="eq-col">
+          <span>Mid</span>
+          <input type="range" id="eqMid" min="-10" max="10" step="1" value="0">
+          <div class="eq-val" id="midVal">0 dB</div>
+        </div>
+        <div class="eq-col">
+          <span>Treble</span>
+          <input type="range" id="eqTreble" min="-10" max="10" step="1" value="0">
+          <div class="eq-val" id="trebleVal">0 dB</div>
+        </div>
+      </div>
+    </div>
 
     <!-- Live Mic Activity Indicator -->
-    <div class="mic-meter-box" aria-hidden="true">
+    <div class="mic-meter-box">
       <div class="meter-bar-bg">
         <div class="meter-bar-fill" id="meterFill"></div>
       </div>
@@ -102,12 +147,12 @@
     <div class="control-group">
       <label>
         <span>Vocal Volume:</span>
-        <span id="vocalVolVal" aria-live="polite">100%</span>
+        <span id="vocalVolVal">100%</span>
       </label>
       <div class="btn-step-row">
-        <button class="btn-step" id="btnVocalDown" aria-label="Decrease vocal volume by 50 percent">-50% Volume</button>
+        <button class="btn-step" id="btnVocalDown">-50% Volume</button>
         <div class="val-display" id="vocalNumDisplay">100%</div>
-        <button class="btn-step" id="btnVocalUp" aria-label="Increase vocal volume by 50 percent">+50% Volume</button>
+        <button class="btn-step" id="btnVocalUp">+50% Volume</button>
       </div>
     </div>
 
@@ -115,57 +160,57 @@
     <div class="control-group">
       <label for="musicVol">
         <span>Karaoke Music Volume:</span>
-        <span id="musicVolVal" aria-live="polite">70%</span>
+        <span id="musicVolVal">70%</span>
       </label>
-      <input type="range" id="musicVol" min="10" max="100" step="5" value="70" aria-label="Karaoke music volume from 10 to 100 percent">
+      <input type="range" id="musicVol" min="10" max="100" step="5" value="70">
     </div>
 
-    <!-- 3. Real Grand Concert Hall Reverb Slider (0% to 100%) -->
+    <!-- Grand Concert Hall Reverb Slider (0% to 100%) -->
     <div class="control-group">
       <label for="echoRange">
         <span>Grand Concert Hall (Ghazal Reverb):</span>
-        <span id="echoVal" aria-live="polite">35%</span>
+        <span id="echoVal">35%</span>
       </label>
-      <input type="range" id="echoRange" min="0" max="100" step="5" value="35" aria-label="Grand concert hall reverb depth from 0 to 100 percent">
+      <input type="range" id="echoRange" min="0" max="100" step="5" value="35">
     </div>
 
-    <!-- 4. Rhythm Sync / Vocal Offset -->
+    <!-- Rhythm Sync / Vocal Offset -->
     <div class="control-group">
       <label>
         <span>Rhythm Sync (Vocal Offset):</span>
-        <span id="offsetVal" aria-live="polite">220 ms</span>
+        <span id="offsetVal">220 ms</span>
       </label>
       <div class="btn-step-row">
-        <button class="btn-step" id="btnOffsetDown100" aria-label="Decrease offset by 100 milliseconds">-100</button>
-        <button class="btn-step" id="btnOffsetDown10" aria-label="Decrease offset by 10 milliseconds">-10</button>
+        <button class="btn-step" id="btnOffsetDown100">-100</button>
+        <button class="btn-step" id="btnOffsetDown10">-10</button>
         <div class="val-display" id="offsetNumDisplay">220 ms</div>
-        <button class="btn-step" id="btnOffsetUp10" aria-label="Increase offset by 10 milliseconds">+10</button>
-        <button class="btn-step" id="btnOffsetUp100" aria-label="Increase offset by 100 milliseconds">+100</button>
+        <button class="btn-step" id="btnOffsetUp10">+10</button>
+        <button class="btn-step" id="btnOffsetUp100">+100</button>
       </div>
     </div>
 
-    <div class="timer" id="timeDisp" aria-label="Recording time">00:00</div>
-    <div class="status-text" id="statusText" aria-live="polite">Choose your track file above to begin.</div>
+    <div class="timer" id="timeDisp">00:00</div>
+    <div class="status-text" id="statusText">Choose your track file above to begin.</div>
 
     <!-- Main Action Buttons -->
     <div class="btn-row">
-      <button class="btn btn-rec" id="startBtn" disabled aria-label="Start Recording">Start Recording</button>
-      <button class="btn btn-stop" id="stopBtn" disabled aria-label="Stop Recording or Playback">Stop</button>
+      <button class="btn btn-rec" id="startBtn" disabled>Start Recording</button>
+      <button class="btn btn-stop" id="stopBtn" disabled>Stop</button>
     </div>
 
     <div class="tip-box">
-      Tip: True Convolution Grand Hall Active (Pure space, zero repeating echo). Volume safely protected from cracking up to 350%.
+      Tip: Auto-Tune automatically corrects your pitch to the nearest chromatic scale notes during mixing. Pre-recorded vocals can also be loaded directly.
     </div>
 
     <!-- Mixing Section -->
-    <section class="preview-box" id="mixSection" aria-label="Mixing and Export Controls">
-      <button class="btn btn-mix" id="mixBtn" aria-label="Mix Backing Track and Recorded Vocals">Mix Track & Vocals</button>
+    <section class="preview-box" id="mixSection">
+      <button class="btn btn-mix" id="mixBtn">Mix Track & Vocals</button>
       
       <div id="readySection" style="display:none; margin-top:12px;">
-        <audio id="finalAudioPlayer" controls aria-label="Mixed Song Player"></audio>
+        <audio id="finalAudioPlayer" controls></audio>
         <div class="btn-row" style="margin-top:10px;">
-          <button class="btn btn-action" id="downloadBtn" aria-label="Download MP3 Song">Download MP3 Song</button>
-          <button class="btn btn-action" id="shareBtn" style="background:#8b5cf6;" aria-label="Share MP3 Audio">Share Audio</button>
+          <button class="btn btn-action" id="downloadBtn">Download MP3 Song</button>
+          <button class="btn btn-action" id="shareBtn" style="background:#8b5cf6;">Share Audio</button>
         </div>
       </div>
     </section>
@@ -178,7 +223,8 @@
     let vocalChunks = [];
     
     let isPreviewing = false;
-    let selectedFile = null;
+    let selectedTrackFile = null;
+    let selectedVocalFile = null;
     let rawVocalBlob = null;
     let finalMp3Blob = null;
 
@@ -190,8 +236,14 @@
     let currentVocalVol = 100;
     let currentMusicVol = 70;
     let currentOffset = 220;
+    let currentAutoTune = 0;
+
+    let currentBass = 0;
+    let currentMid = 0;
+    let currentTreble = 0;
 
     const fileInput = document.getElementById('karaokeFile');
+    const vocalFileInput = document.getElementById('vocalFile');
     const karaokeAudioPlayer = document.getElementById('karaokeAudioPlayer');
     const startBtn = document.getElementById('startBtn');
     const stopBtn = document.getElementById('stopBtn');
@@ -211,6 +263,8 @@
 
     const pitchSemi = document.getElementById('pitchSemi');
     const pitchVal = document.getElementById('pitchVal');
+    const autoTuneRange = document.getElementById('autoTuneRange');
+    const autoTuneVal = document.getElementById('autoTuneVal');
     const echoRange = document.getElementById('echoRange');
     const echoVal = document.getElementById('echoVal');
     const musicVol = document.getElementById('musicVol');
@@ -220,19 +274,79 @@
     const offsetVal = document.getElementById('offsetVal');
     const offsetNumDisplay = document.getElementById('offsetNumDisplay');
 
+    const eqBass = document.getElementById('eqBass');
+    const eqMid = document.getElementById('eqMid');
+    const eqTreble = document.getElementById('eqTreble');
+    const bassVal = document.getElementById('bassVal');
+    const midVal = document.getElementById('midVal');
+    const trebleVal = document.getElementById('trebleVal');
+    const eqStatusDisp = document.getElementById('eqStatusDisp');
+
+    // 1. Karaoke Track Upload
     fileInput.addEventListener('change', function() {
       if (!this.files || this.files.length === 0) return;
 
-      selectedFile = this.files[0];
-      const objectUrl = URL.createObjectURL(selectedFile);
+      selectedTrackFile = this.files[0];
+      const objectUrl = URL.createObjectURL(selectedTrackFile);
       
       karaokeAudioPlayer.src = objectUrl;
       karaokeAudioPlayer.volume = currentMusicVol / 100;
       
-      statusText.innerText = "Loaded: " + selectedFile.name.substring(0, 22) + "... Ready to record!";
+      statusText.innerText = "Track Loaded: " + selectedTrackFile.name.substring(0, 22) + "... Ready!";
       startBtn.disabled = false;
       previewScaleBtn.disabled = false;
+
+      if (rawVocalBlob || selectedVocalFile) {
+        mixSection.style.display = 'block';
+      }
     });
+
+    // 2. Pre-recorded Vocals Upload (Optional)
+    vocalFileInput.addEventListener('change', function() {
+      if (!this.files || this.files.length === 0) return;
+
+      selectedVocalFile = this.files[0];
+      rawVocalBlob = selectedVocalFile;
+
+      statusText.innerText = "Vocals Loaded: " + selectedVocalFile.name.substring(0, 22) + "... Ready to Mix!";
+      mixSection.style.display = 'block';
+      readySection.style.display = 'none';
+    });
+
+    // Auto-Tune Slider
+    autoTuneRange.oninput = () => {
+      currentAutoTune = parseInt(autoTuneRange.value);
+      if (currentAutoTune === 0) {
+        autoTuneVal.innerText = "0% (Off)";
+        autoTuneVal.style.color = "#94a3b8";
+      } else if (currentAutoTune <= 45) {
+        autoTuneVal.innerText = currentAutoTune + "% (Natural)";
+        autoTuneVal.style.color = "#38bdf8";
+      } else {
+        autoTuneVal.innerText = currentAutoTune + "% (Hard Tune)";
+        autoTuneVal.style.color = "#10b981";
+      }
+    };
+
+    // 3-Band EQ Sliders
+    function updateEqDisplays() {
+      currentBass = parseInt(eqBass.value);
+      currentMid = parseInt(eqMid.value);
+      currentTreble = parseInt(eqTreble.value);
+
+      bassVal.innerText = (currentBass > 0 ? "+" : "") + currentBass + " dB";
+      midVal.innerText = (currentMid > 0 ? "+" : "") + currentMid + " dB";
+      trebleVal.innerText = (currentTreble > 0 ? "+" : "") + currentTreble + " dB";
+
+      if (currentBass === 0 && currentMid === 0 && currentTreble === 0) {
+        eqStatusDisp.innerText = "Flat (0 dB)";
+      } else {
+        eqStatusDisp.innerText = "Custom Studio EQ";
+      }
+    }
+    eqBass.oninput = updateEqDisplays;
+    eqMid.oninput = updateEqDisplays;
+    eqTreble.oninput = updateEqDisplays;
 
     pitchSemi.oninput = () => {
       currentPitch = parseInt(pitchSemi.value);
@@ -314,6 +428,7 @@
       stopScalePreview();
       vocalChunks = [];
       rawVocalBlob = null;
+      selectedVocalFile = null;
 
       try {
         const ctx = getAudioContext();
@@ -336,334 +451,369 @@
 
         micStream = await navigator.mediaDevices.getUserMedia(micConstraints);
 
-        const micSource = ctx.createMediaStreamSource(micStream);
+        // Meter setup
+        const srcNode = ctx.createMediaStreamSource(micStream);
         const analyser = ctx.createAnalyser();
-        analyser.fftSize = 128;
-        micSource.connect(analyser);
+        analyser.fftSize = 256;
+        srcNode.connect(analyser);
 
-        const dataArray = new Uint8Array(analyser.frequencyBinCount);
-        function updateMeter() {
-          analyser.getByteFrequencyData(dataArray);
+        const dataArr = new Uint8Array(analyser.frequencyBinCount);
+        function drawMeter() {
+          analyser.getByteFrequencyData(dataArr);
           let sum = 0;
-          for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
-          let average = sum / dataArray.length;
-          let pct = Math.min(100, Math.round((average / 110) * 100));
-          meterFill.style.width = pct + '%';
-          meterAnimId = requestAnimationFrame(updateMeter);
+          for (let i = 0; i < dataArr.length; i++) sum += dataArr[i];
+          const avg = sum / dataArr.length;
+          meterFill.style.width = Math.min(100, (avg / 128) * 100) + '%';
+          meterAnimId = requestAnimationFrame(drawMeter);
         }
-        updateMeter();
+        drawMeter();
 
-        let mime = '';
-        const types = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4'];
-        for (let t of types) {
-          if (MediaRecorder.isTypeSupported(t)) { mime = t; break; }
-        }
-
+        const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : (MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4' : '');
         mediaRecorder = mime ? new MediaRecorder(micStream, { mimeType: mime }) : new MediaRecorder(micStream);
 
-        mediaRecorder.ondataavailable = (e) => {
+        mediaRecorder.ondataavailable = e => {
           if (e.data && e.data.size > 0) vocalChunks.push(e.data);
         };
 
         mediaRecorder.onstop = () => {
-          cancelAnimationFrame(meterAnimId);
-          meterFill.style.width = '0%';
-
-          if (vocalChunks.length === 0) {
-            alert("No audio captured! Please check microphone permissions.");
-            return;
-          }
-
           rawVocalBlob = new Blob(vocalChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+          statusText.innerText = "Recording finished! Now click 'Mix Track & Vocals'.";
           mixSection.style.display = 'block';
-          statusText.innerText = "Vocals captured. Click 'Mix Track & Vocals'.";
-          mixBtn.focus();
-        };
-
-        karaokeAudioPlayer.currentTime = 0;
-        await karaokeAudioPlayer.play();
-
-        karaokeAudioPlayer.onended = () => {
-          statusText.innerText = "Track finished. Recording stopped automatically.";
-          stopRecordingProcess();
+          readySection.style.display = 'none';
         };
 
         mediaRecorder.start(100);
 
-        startBtn.disabled = true;
-        previewScaleBtn.disabled = true;
-        stopBtn.disabled = false;
-        stopBtn.focus();
+        karaokeAudioPlayer.currentTime = 0;
+        await karaokeAudioPlayer.play();
 
-        mixSection.style.display = 'none';
-        readySection.style.display = 'none';
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        fileInput.disabled = true;
+        vocalFileInput.disabled = true;
+        previewScaleBtn.disabled = true;
 
         secondsElapsed = 0;
-        clearInterval(timerInterval);
+        timeDisp.innerText = "00:00";
         timerInterval = setInterval(() => {
           secondsElapsed++;
-          let m = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
-          let s = String(secondsElapsed % 60).padStart(2, '0');
-          timeDisp.innerText = `${m}:${s}`;
+          const m = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+          const s = String(secondsElapsed % 60).padStart(2, '0');
+          timeDisp.innerText = m + ":" + s;
         }, 1000);
 
-        statusText.innerText = "Recording in progress... Sing into the mic.";
+        statusText.innerText = "Recording in progress... Sing with rhythm!";
       } catch (err) {
-        alert("Microphone Error: " + err.message);
-        statusText.innerText = "Mic Error: " + err.message;
-        startBtn.disabled = false;
-        previewScaleBtn.disabled = false;
-        stopBtn.disabled = true;
+        alert("Microphone Access Error: " + err.message);
+        statusText.innerText = "Error accessing microphone.";
       }
     });
 
-    function stopRecordingProcess() {
-      karaokeAudioPlayer.pause();
-      karaokeAudioPlayer.currentTime = 0;
-
+    stopBtn.addEventListener('click', () => {
       if (mediaRecorder && mediaRecorder.state !== 'inactive') {
         mediaRecorder.stop();
       }
       if (micStream) {
-        micStream.getTracks().forEach(track => track.stop());
+        micStream.getTracks().forEach(t => t.stop());
+        micStream = null;
+      }
+      if (meterAnimId) {
+        cancelAnimationFrame(meterAnimId);
+        meterFill.style.width = '0%';
       }
       clearInterval(timerInterval);
-      cancelAnimationFrame(meterAnimId);
-      startBtn.disabled = false;
-      previewScaleBtn.disabled = false;
-      stopBtn.disabled = true;
-    }
 
-    stopBtn.addEventListener('click', () => {
-      statusText.innerText = "Stopped manually.";
-      stopRecordingProcess();
+      karaokeAudioPlayer.pause();
+      karaokeAudioPlayer.currentTime = 0;
+
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+      fileInput.disabled = false;
+      vocalFileInput.disabled = false;
+      previewScaleBtn.disabled = false;
     });
 
-    // Helper: Procedural Stereo Impulse Response for Grand Concert Hall
-    function createGrandHallImpulse(context, durationSeconds = 2.6, decay = 2.4) {
-      const sampleRate = context.sampleRate;
-      const length = Math.floor(sampleRate * durationSeconds);
-      const impulse = context.createBuffer(2, length, sampleRate);
+    // Impulse Response for Grand Concert Hall Reverb
+    function createGrandHallImpulse(ctx, duration = 2.4, decay = 2.2) {
+      const rate = ctx.sampleRate;
+      const length = rate * duration;
+      const impulse = ctx.createBuffer(2, length, rate);
       const left = impulse.getChannelData(0);
       const right = impulse.getChannelData(1);
 
       for (let i = 0; i < length; i++) {
         const n = i / length;
-        // Exponential smooth decay curve mimics acoustic absorption in a huge concert auditorium
-        const factor = Math.exp(-n * decay * 4.0);
-        
-        // Dense stereo diffusion without discrete periodic repeats
-        left[i] = ((Math.random() * 2) - 1) * factor;
-        right[i] = ((Math.random() * 2) - 1) * factor;
+        const e = Math.exp(-n * decay);
+        left[i] = ((Math.random() * 2) - 1) * e;
+        right[i] = ((Math.random() * 2) - 1) * e;
       }
       return impulse;
     }
 
-    // Offline Mixing Engine (True Grand Hall & Crack-Proof Vocal Bus)
+    // 🌟 Auto-Tune Chromatic Pitch Correction Processing
+    function applyAutoTune(vocalBuffer, strengthPercent) {
+      if (strengthPercent <= 0) return vocalBuffer;
+
+      const sr = vocalBuffer.sampleRate;
+      const numChannels = vocalBuffer.numberOfChannels;
+      const channelData = [];
+      for (let c = 0; c < numChannels; c++) {
+        channelData.push(vocalBuffer.getChannelData(c));
+      }
+
+      const frameSize = 2048;
+      const hopSize = 512;
+      const totalSamples = vocalBuffer.length;
+      const factor = strengthPercent / 100;
+
+      const A4 = 440;
+      function getTargetFreq(detectedFreq) {
+        if (detectedFreq < 55 || detectedFreq > 1200) return detectedFreq;
+        const midi = Math.round(69 + 12 * Math.log2(detectedFreq / A4));
+        const target = A4 * Math.pow(2, (midi - 69) / 12);
+        return detectedFreq + (target - detectedFreq) * factor;
+      }
+
+      function detectPitch(buffer, start) {
+        let maxCorr = 0;
+        let bestLag = -1;
+        const minLag = Math.floor(sr / 1000); // 1000 Hz
+        const maxLag = Math.floor(sr / 65);   // 65 Hz
+
+        for (let lag = minLag; lag <= maxLag; lag++) {
+          let corr = 0;
+          for (let i = 0; i < 512; i++) {
+            const s1 = buffer[start + i] || 0;
+            const s2 = buffer[start + i + lag] || 0;
+            corr += s1 * s2;
+          }
+          if (corr > maxCorr) {
+            maxCorr = corr;
+            bestLag = lag;
+          }
+        }
+        return bestLag > 0 ? (sr / bestLag) : 0;
+      }
+
+      // Smooth Pitch Shift on Primary Channel
+      const primary = channelData[0];
+      for (let pos = 0; pos < totalSamples - frameSize; pos += hopSize) {
+        const detected = detectPitch(primary, pos);
+        if (detected > 65 && detected < 1000) {
+          const target = getTargetFreq(detected);
+          const ratio = target / detected;
+          if (Math.abs(ratio - 1) > 0.005) {
+            for (let c = 0; c < numChannels; c++) {
+              const ch = channelData[c];
+              for (let j = 0; j < hopSize; j++) {
+                const idx = pos + j;
+                const orig = ch[idx];
+                const interpIdx = Math.min(totalSamples - 1, Math.round(pos + j * ratio));
+                const shifted = ch[interpIdx];
+                ch[idx] = (orig * (1 - factor)) + (shifted * factor);
+              }
+            }
+          }
+        }
+      }
+      return vocalBuffer;
+    }
+
+    // 🌟 Master Mixing Engine
     mixBtn.addEventListener('click', async () => {
-      if (!rawVocalBlob || !selectedFile) {
-        alert("Audio data missing.");
+      if (!selectedTrackFile) {
+        alert("Please select a karaoke backing track first!");
+        return;
+      }
+      if (!rawVocalBlob) {
+        alert("Please record vocals or select a pre-recorded vocal file!");
         return;
       }
 
-      statusText.innerText = "Applying True Concert Hall & Limiting MP3 (~3 seconds)...";
+      statusText.innerText = "Decoding audio tracks... Please wait.";
       mixBtn.disabled = true;
 
       try {
-        const ctx = getAudioContext();
-        
-        const trackArrayBuffer = await selectedFile.arrayBuffer();
-        const karaokeBuffer = await ctx.decodeAudioData(trackArrayBuffer);
+        const actx = getAudioContext();
+        if (actx.state === 'suspended') await actx.resume();
 
-        const vocalArrayBuffer = await rawVocalBlob.arrayBuffer();
-        const vocalAudioBuffer = await ctx.decodeAudioData(vocalArrayBuffer);
+        // 1. Decode Backing Track
+        const trackArrBuf = await selectedTrackFile.arrayBuffer();
+        const origMusicBuffer = await actx.decodeAudioData(trackArrBuf);
 
-        const latencySec = parseFloat(currentOffset) / 1000.0;
-        const totalDuration = Math.max(karaokeBuffer.duration, vocalAudioBuffer.duration);
-        
-        const offlineCtx = new OfflineAudioContext(2, 44100 * totalDuration, 44100);
+        // 2. Decode Vocals
+        const vocalArrBuf = await rawVocalBlob.arrayBuffer();
+        let vocalBuffer = await actx.decodeAudioData(vocalArrBuf);
 
-        // 1. MASTER LIMITER (Transparent Studio Brickwall)
-        const masterLimiter = offlineCtx.createDynamicsCompressor();
-        masterLimiter.threshold.value = -1.2;
-        masterLimiter.knee.value = 0.0;
-        masterLimiter.ratio.value = 20.0;
-        masterLimiter.attack.value = 0.001;
-        masterLimiter.release.value = 0.14;
-        masterLimiter.connect(offlineCtx.destination);
+        // 🌟 Apply Auto-Tune Processing (if enabled)
+        if (currentAutoTune > 0) {
+          statusText.innerText = `Applying Studio Auto-Tune (${currentAutoTune}%)...`;
+          vocalBuffer = applyAutoTune(vocalBuffer, currentAutoTune);
+        }
 
-        // 2. Karaoke Music Track
-        const musicSource = offlineCtx.createBufferSource();
-        musicSource.buffer = karaokeBuffer;
-        musicSource.detune.value = currentPitch * 100;
-        
-        const musicGain = offlineCtx.createGain();
+        statusText.innerText = "Rendering Reverb, Studio EQ & Volumes...";
+
+        const sampleRate = 44100;
+        const offsetSec = currentOffset / 1000;
+        const totalDuration = Math.max(origMusicBuffer.duration, vocalBuffer.duration + offsetSec) + 1.5;
+        const totalLength = Math.ceil(totalDuration * sampleRate);
+
+        const offCtx = new OfflineAudioContext(2, totalLength, sampleRate);
+
+        // 3. Setup Backing Track Node
+        const musicSource = offCtx.createBufferSource();
+        musicSource.buffer = origMusicBuffer;
+        if (currentPitch !== 0) {
+          musicSource.playbackRate.value = Math.pow(2, currentPitch / 12);
+        }
+
+        const musicGain = offCtx.createGain();
         musicGain.gain.value = currentMusicVol / 100;
         musicSource.connect(musicGain);
-        musicGain.connect(masterLimiter);
+        musicGain.connect(offCtx.destination);
 
-        // 3. VOCAL PRE-PROCESSING (Clarity & Dynamics)
-        const vocalSource = offlineCtx.createBufferSource();
-        vocalSource.buffer = vocalAudioBuffer;
+        // 4. Setup Vocal Node with 3-Band Studio EQ
+        const vocalSource = offCtx.createBufferSource();
+        vocalSource.buffer = vocalBuffer;
 
-        const highPass = offlineCtx.createBiquadFilter();
-        highPass.type = "highpass";
-        highPass.frequency.value = 90;
+        const vocalGain = offCtx.createGain();
+        vocalGain.gain.value = currentVocalVol / 100;
 
-        const presenceFilter = offlineCtx.createBiquadFilter();
-        presenceFilter.type = "peaking";
-        presenceFilter.frequency.value = 4000;
-        presenceFilter.Q.value = 0.85;
-        presenceFilter.gain.value = 2.6;
+        // 3-Band Biquad Filters (EQ)
+        const bassFilter = offCtx.createBiquadFilter();
+        bassFilter.type = 'lowshelf';
+        bassFilter.frequency.value = 250;
+        bassFilter.gain.value = currentBass;
 
-        // Smart Adaptive Leveler: Prevents cracking when volume is pushed to 250%-350%
-        const volPercent = parseFloat(currentVocalVol);
-        const vocalLeveler = offlineCtx.createDynamicsCompressor();
-        // Dynamic headroom calculation keeps loud parts round and full
-        vocalLeveler.threshold.value = volPercent > 180 ? -16.0 : -10.0;
-        vocalLeveler.knee.value = 16;
-        vocalLeveler.ratio.value = volPercent > 180 ? 12.0 : 6.0;
-        vocalLeveler.attack.value = 0.005;
-        vocalLeveler.release.value = 0.18;
+        const midFilter = offCtx.createBiquadFilter();
+        midFilter.type = 'peaking';
+        midFilter.frequency.value = 1500;
+        midFilter.Q.value = 1.0;
+        midFilter.gain.value = currentMid;
 
-        vocalSource.connect(highPass);
-        highPass.connect(presenceFilter);
-        presenceFilter.connect(vocalLeveler);
+        const trebleFilter = offCtx.createBiquadFilter();
+        trebleFilter.type = 'highshelf';
+        trebleFilter.frequency.value = 4000;
+        trebleFilter.gain.value = currentTreble;
 
-        // Master Vocal Pre-Gain (Safely scaled with headroom preservation)
-        const vocalMasterGain = offlineCtx.createGain();
-        vocalMasterGain.gain.value = (volPercent / 100) * 0.88; // 0.88 safety coefficient prevents clipping
+        // Connect Vocal through EQ
+        vocalSource.connect(bassFilter);
+        bassFilter.connect(midFilter);
+        midFilter.connect(trebleFilter);
+        trebleFilter.connect(vocalGain);
 
-        // Direct Throat Voice (Dry)
-        const dryGain = offlineCtx.createGain();
-        dryGain.gain.value = 1.0;
-        vocalLeveler.connect(dryGain);
-        dryGain.connect(vocalMasterGain);
+        // 5. Setup Grand Concert Hall Convolution Reverb
+        const echoPercent = parseInt(echoRange.value) / 100;
+        if (echoPercent > 0) {
+          const convolver = offCtx.createConvolver();
+          convolver.buffer = createGrandHallImpulse(offCtx, 2.4, 2.2);
 
-        // 4. TRUE CONVOLUTION GRAND CONCERT HALL ENGINE (Zero Echo, Pure Majestic Space)
-        const reverbPercent = parseFloat(echoRange.value) / 100;
-        if (reverbPercent > 0.01) {
-          const convolver = offlineCtx.createConvolver();
-          convolver.buffer = createGrandHallImpulse(offlineCtx, 2.6, 2.3);
+          const wetGain = offCtx.createGain();
+          wetGain.gain.value = echoPercent * 0.75;
 
-          // Tone Warmth Filter: Softens any high-end harshness in the hall decay
-          const hallTone = offlineCtx.createBiquadFilter();
-          hallTone.type = "lowpass";
-          hallTone.frequency.value = 3400;
+          const dryGain = offCtx.createGain();
+          dryGain.gain.value = 1.0;
 
-          // Hall Wet Mix Gain
-          const wetGain = offlineCtx.createGain();
-          wetGain.gain.value = reverbPercent * 0.95; // Full deep immersion available
-
-          vocalLeveler.connect(hallTone);
-          hallTone.connect(convolver);
+          vocalGain.connect(convolver);
           convolver.connect(wetGain);
-          wetGain.connect(vocalMasterGain);
-        }
+          wetGain.connect(offCtx.destination);
 
-        vocalMasterGain.connect(masterLimiter);
-
-        musicSource.start(0);
-        if (vocalAudioBuffer.duration > latencySec) {
-          vocalSource.start(0, latencySec);
+          vocalGain.connect(dryGain);
+          dryGain.connect(offCtx.destination);
         } else {
-          vocalSource.start(0);
+          vocalGain.connect(offCtx.destination);
         }
 
-        const renderedBuffer = await offlineCtx.startRendering();
+        // Start Sources
+        musicSource.start(0);
+        vocalSource.start(offsetSec);
 
-        finalMp3Blob = audioBufferToMp3(renderedBuffer);
+        // Render Mix
+        const renderedBuffer = await offCtx.startRendering();
 
-        const finalUrl = URL.createObjectURL(finalMp3Blob);
-        finalAudioPlayer.src = finalUrl;
+        statusText.innerText = "Encoding high quality MP3 (192 kbps)...";
+
+        // 6. Encode to MP3 using lamejs
+        finalMp3Blob = await encodeMp3Blob(renderedBuffer);
+
+        const mixedAudioUrl = URL.createObjectURL(finalMp3Blob);
+        finalAudioPlayer.src = mixedAudioUrl;
+        
         readySection.style.display = 'block';
-        mixBtn.disabled = false;
-        statusText.innerText = "Grand Hall MP3 Ready! Size: ~2.5 MB. Ready to play or download.";
-        finalAudioPlayer.focus();
+        mixSection.scrollIntoView({ behavior: 'smooth' });
+        statusText.innerText = "✓ Song mixed with Grand Hall & Auto-Tune! Play or Download below.";
       } catch (err) {
-        alert("Mixing failed: " + err.message);
-        statusText.innerText = "Mixing Error: " + err.message;
+        alert("Mixing Error: " + err.message);
+        statusText.innerText = "Mixing failed. Check audio files.";
+      } finally {
         mixBtn.disabled = false;
       }
     });
 
-    function audioBufferToMp3(audioBuffer) {
-      if (typeof lamejs === 'undefined') {
-        alert("MP3 library still initializing. Please wait a second and retry.");
-        return null;
-      }
-      const channels = audioBuffer.numberOfChannels;
-      const sampleRate = audioBuffer.sampleRate;
-      const mp3encoder = new lamejs.Mp3Encoder(channels, sampleRate, 128);
-      const mp3Data = [];
+    // Lamejs MP3 Encoder
+    function encodeMp3Blob(audioBuffer) {
+      return new Promise((resolve) => {
+        const numChannels = 2;
+        const sampleRate = audioBuffer.sampleRate;
+        const mp3encoder = new lamejs.Mp3Encoder(numChannels, sampleRate, 192);
 
-      const left = audioBuffer.getChannelData(0);
-      const right = channels > 1 ? audioBuffer.getChannelData(1) : left;
+        const leftChan = audioBuffer.getChannelData(0);
+        const rightChan = audioBuffer.numberOfChannels > 1 ? audioBuffer.getChannelData(1) : leftChan;
+        const sampleCount = audioBuffer.length;
 
-      const sampleBlockSize = 1152;
-      const leftInt16 = new Int16Array(sampleBlockSize);
-      const rightInt16 = new Int16Array(sampleBlockSize);
+        const leftInt16 = new Int16Array(sampleCount);
+        const rightInt16 = new Int16Array(sampleCount);
 
-      for (let i = 0; i < left.length; i += sampleBlockSize) {
-        const chunkLen = Math.min(sampleBlockSize, left.length - i);
-        
-        for (let j = 0; j < chunkLen; j++) {
-          let sL = Math.max(-1, Math.min(1, left[i + j]));
-          leftInt16[j] = sL < 0 ? sL * 0x8000 : sL * 0x7FFF;
-
-          let sR = Math.max(-1, Math.min(1, right[i + j]));
-          rightInt16[j] = sR < 0 ? sR * 0x8000 : sR * 0x7FFF;
+        for (let i = 0; i < sampleCount; i++) {
+          const l = Math.max(-1, Math.min(1, leftChan[i]));
+          const r = Math.max(-1, Math.min(1, rightChan[i]));
+          leftInt16[i] = l < 0 ? l * 0x8000 : l * 0x7FFF;
+          rightInt16[i] = r < 0 ? r * 0x8000 : r * 0x7FFF;
         }
 
-        let mp3buf;
-        if (channels === 2) {
-          mp3buf = mp3encoder.encodeBuffer(leftInt16.subarray(0, chunkLen), rightInt16.subarray(0, chunkLen));
-        } else {
-          mp3buf = mp3encoder.encodeBuffer(leftInt16.subarray(0, chunkLen));
+        const mp3Data = [];
+        const chunkSize = 1152;
+        for (let i = 0; i < sampleCount; i += chunkSize) {
+          const leftChunk = leftInt16.subarray(i, i + chunkSize);
+          const rightChunk = rightInt16.subarray(i, i + chunkSize);
+          const mp3buf = mp3encoder.encodeBuffer(leftChunk, rightChunk);
+          if (mp3buf.length > 0) mp3Data.push(mp3buf);
         }
 
-        if (mp3buf.length > 0) {
-          mp3Data.push(mp3buf);
-        }
-      }
+        const endBuf = mp3encoder.flush();
+        if (endBuf.length > 0) mp3Data.push(endBuf);
 
-      const mp3buf = mp3encoder.flush();
-      if (mp3buf.length > 0) {
-        mp3Data.push(mp3buf);
-      }
-
-      return new Blob(mp3Data, { type: 'audio/mp3' });
+        resolve(new Blob(mp3Data, { type: 'audio/mp3' }));
+      });
     }
 
+    // Download Button
     downloadBtn.addEventListener('click', () => {
       if (!finalMp3Blob) return;
-      const url = URL.createObjectURL(finalMp3Blob);
       const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      a.download = `Karaoke_Song_${Date.now()}.mp3`;
+      a.href = URL.createObjectURL(finalMp3Blob);
+      a.download = `Studio_Master_Song_${Date.now()}.mp3`;
       document.body.appendChild(a);
       a.click();
-      setTimeout(() => {
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }, 200);
+      document.body.removeChild(a);
     });
 
+    // Share Button
     shareBtn.addEventListener('click', async () => {
       if (!finalMp3Blob) return;
-      const file = new File([finalMp3Blob], `Karaoke_Song_${Date.now()}.mp3`, { type: 'audio/mp3' });
-
+      const file = new File([finalMp3Blob], "Karaoke_Master_Song.mp3", { type: "audio/mp3" });
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         try {
           await navigator.share({
-            files: [file],
-            title: 'My Karaoke MP3',
-            text: 'Listen to my new karaoke song!'
+            title: "Karaoke Studio Master Song",
+            text: "Listen to my latest recorded karaoke song with Grand Hall & Auto-Tune!",
+            files: [file]
           });
-        } catch (err) {}
+        } catch (e) {
+          console.log("Share skipped/cancelled", e);
+        }
       } else {
-        alert("Direct share not supported on this browser. Please use the Download button.");
+        alert("Web Share API is not supported on this browser. Use Download instead.");
       }
     });
   </script>
