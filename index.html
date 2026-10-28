@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Studio Karaoke Master Pro - Anti-Bleed Edition</title>
+  <title>Studio Karaoke Master Pro</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.all.min.js"></script>
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; }
@@ -80,7 +80,7 @@
 
     <!-- Earphones / Speaker Mode Toggle -->
     <div class="toggle-row">
-      <span class="toggle-label" id="modeStatusText">Mode: Mobile Speaker (Anti-Bleed Active)</span>
+      <span class="toggle-label" id="modeStatusText">Mode: Mobile Speaker (Anti-Bleed AEC Active)</span>
       <label class="switch">
         <input type="checkbox" id="earphoneToggle">
         <span class="slider-toggle"></span>
@@ -157,9 +157,9 @@
     <div class="control-group">
       <label for="musicVol">
         <span>Karaoke Music Volume:</span>
-        <span id="musicVolVal">70%</span>
+        <span id="musicVolVal">50%</span>
       </label>
-      <input type="range" id="musicVol" min="0" max="100" step="5" value="70">
+      <input type="range" id="musicVol" min="0" max="100" step="5" value="50">
     </div>
 
     <!-- Grand Concert Hall Reverb Slider -->
@@ -196,7 +196,7 @@
     </div>
 
     <div class="tip-box">
-      Tip: Keep Speaker volume around 60-70% for best anti-bleed results. Use Wired Earphones for pure studio isolation.
+      Tip: In Mobile Speaker mode, keep track volume moderate (~50%) so hardware echo cancellation can cleanly separate your voice.
     </div>
 
     <!-- Mixing Section -->
@@ -232,7 +232,7 @@
 
     let currentPitch = 0;
     let currentVocalVol = 100;
-    let currentMusicVol = 70;
+    let currentMusicVol = 50; // Optimized default for speaker anti-bleed
     let currentOffset = 0;
     let currentAutoTune = 0;
 
@@ -402,7 +402,7 @@
         modeStatusText.innerText = "Mode: Wired Earphones (Pure Studio)";
         modeStatusText.style.color = "#34d399";
       } else {
-        modeStatusText.innerText = "Mode: Mobile Speaker (Anti-Bleed Active)";
+        modeStatusText.innerText = "Mode: Mobile Speaker (Anti-Bleed AEC Active)";
         modeStatusText.style.color = "#cbd5e1";
       }
     });
@@ -447,7 +447,7 @@
       statusText.innerText = "Playing track... Rehearse your vocals.";
     });
 
-    // Recording Engine with Hardware AEC and Voice Bandpass Isolation
+    // Reliable Native Microphone Recording Engine
     startBtn.addEventListener('click', async () => {
       stopScalePreview();
       vocalChunks = [];
@@ -459,44 +459,23 @@
 
         const isEarphones = earphoneToggle.checked;
         
-        // Microphone constraints: Acoustic Echo Cancellation active in Speaker mode
+        // Mobile speaker uses Acoustic Echo Cancellation to isolate the vocals from the music
         const micConstraints = {
           audio: isEarphones ? {
             echoCancellation: false,
             noiseSuppression: false,
-            autoGainControl: false,
-            channelCount: 1
+            autoGainControl: false
           } : {
             echoCancellation: true,
             noiseSuppression: true,
-            autoGainControl: false,
-            channelCount: 1
+            autoGainControl: true
           }
         };
 
         micStream = await navigator.mediaDevices.getUserMedia(micConstraints);
 
+        // Visualizer Meter Setup
         const micSource = ctx.createMediaStreamSource(micStream);
-        let recordDestination = ctx.createMediaStreamDestination();
-
-        if (!isEarphones) {
-          // Anti-Bleed Voice Filter Pipeline: Strips low rumbling bass and high music hiss from speaker
-          const vocalHighPass = ctx.createBiquadFilter();
-          vocalHighPass.type = "highpass";
-          vocalHighPass.frequency.value = 140;
-
-          const vocalLowPass = ctx.createBiquadFilter();
-          vocalLowPass.type = "lowpass";
-          vocalLowPass.frequency.value = 7500;
-
-          micSource.connect(vocalHighPass);
-          vocalHighPass.connect(vocalLowPass);
-          vocalLowPass.connect(recordDestination);
-        } else {
-          micSource.connect(recordDestination);
-        }
-
-        // Live Audio Visualizer Meter
         const analyser = ctx.createAnalyser();
         analyser.fftSize = 128;
         micSource.connect(analyser);
@@ -513,14 +492,15 @@
         }
         updateMeter();
 
+        // Choose supported audio container
         let mime = '';
         const types = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/aac'];
         for (let t of types) {
           if (MediaRecorder.isTypeSupported(t)) { mime = t; break; }
         }
 
-        const streamToRecord = recordDestination.stream;
-        mediaRecorder = mime ? new MediaRecorder(streamToRecord, { mimeType: mime }) : new MediaRecorder(streamToRecord);
+        // Direct hardware stream recording (prevents Android WebView lockup)
+        mediaRecorder = mime ? new MediaRecorder(micStream, { mimeType: mime }) : new MediaRecorder(micStream);
 
         mediaRecorder.ondataavailable = (e) => {
           if (e.data && e.data.size > 0) vocalChunks.push(e.data);
