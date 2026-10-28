@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Studio Karaoke Master Pro - Grand Hall & Auto-Tune Edition</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.all.min.js" defer></script>
+  <title>Studio Karaoke Master Pro - Professional Edition</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.all.min.js"></script>
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; }
     body { background: #0f172a; color: #f8fafc; padding: 14px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
@@ -68,54 +68,51 @@
     
     <!-- 1. Track File Input -->
     <div class="file-input-wrapper">
-      <label for="karaokeFile" class="file-label">1. Select Karaoke Track (MP3/WAV):</label>
+      <label for="karaokeFile" class="file-label">1. कराओके म्यूज़िक ट्रैक चुनें (MP3 / WAV):</label>
       <input type="file" id="karaokeFile" class="file-input-field" accept="audio/*">
     </div>
 
-    <!-- 2. Pre-recorded Vocals Input (Optional) -->
+    <!-- 2. Pre-recorded Vocals Input -->
     <div class="file-input-wrapper">
-      <label for="vocalFile" class="file-label">2. Select Pre-recorded Vocals (Optional):</label>
+      <label for="vocalFile" class="file-label" style="color:#34d399;">2. स्वर (Vocals) फ़ाइल अपलोड करें (कोई भी रिकॉर्डेड MP3/WAV/M4A):</label>
       <input type="file" id="vocalFile" class="file-input-field" accept="audio/*" style="border-color:#10b981;">
     </div>
 
-    <!-- Hidden Track Player -->
-    <audio id="karaokeAudioPlayer" preload="auto" style="display:none;"></audio>
-
     <!-- Earphones / Speaker Mode Toggle -->
     <div class="toggle-row">
-      <span class="toggle-label" id="modeStatusText">Mode: Mobile Speaker (Anti-Bleed)</span>
+      <span class="toggle-label" id="modeStatusText">मोड: मोबाइल स्पीकर (Anti-Bleed)</span>
       <label class="switch">
         <input type="checkbox" id="earphoneToggle">
         <span class="slider-toggle"></span>
       </label>
     </div>
 
-    <!-- Track Scale (Pitch Shift) Slider (-6 to +6 Semitones) -->
+    <!-- Track Scale (Pitch Shift) Slider -->
     <div class="control-group">
       <label for="pitchSemi">
-        <span>Track Scale (Pitch Shift):</span>
-        <span id="pitchVal">Original (0 st)</span>
+        <span>ट्रैक स्केल (पिच बदलें):</span>
+        <span id="pitchVal">ओरिजिनल (0 st)</span>
       </label>
       <input type="range" id="pitchSemi" min="-6" max="6" step="1" value="0">
     </div>
 
     <!-- Scale Preview Button -->
-    <button class="btn btn-preview" id="previewScaleBtn" disabled>Test Scale (Play Track)</button>
+    <button class="btn btn-preview" id="previewScaleBtn" disabled>स्केल चेक करें (म्यूज़िक चलाएँ)</button>
 
-    <!-- Auto-Tune Pitch Correction Slider (0% to 100%) -->
+    <!-- Auto-Tune Pitch Correction Slider -->
     <div class="control-group">
       <label for="autoTuneRange">
-        <span>Auto-Tune Pitch Correction:</span>
-        <span id="autoTuneVal" style="color:#10b981; font-weight:bold;">0% (Off)</span>
+        <span>ऑटो-ट्यून (सुर सुधार):</span>
+        <span id="autoTuneVal" style="color:#10b981; font-weight:bold;">0% (बंद)</span>
       </label>
       <input type="range" id="autoTuneRange" min="0" max="100" step="5" value="0" style="accent-color:#10b981;">
     </div>
 
-    <!-- 3-Band Vocal EQ (Bass, Mid, Treble) -->
+    <!-- 3-Band Vocal EQ -->
     <div class="control-group">
       <label>
-        <span>3-Band Studio Vocal EQ:</span>
-        <span id="eqStatusDisp">Flat (0 dB)</span>
+        <span>3-बैंड स्टूडियो स्वर EQ:</span>
+        <span id="eqStatusDisp">सामान्य (Flat)</span>
       </label>
       <div class="eq-grid">
         <div class="eq-col">
@@ -143,74 +140,74 @@
       </div>
     </div>
 
-    <!-- Vocal Volume with -50% and +50% Buttons -->
+    <!-- Vocal Volume Controls -->
     <div class="control-group">
       <label>
-        <span>Vocal Volume:</span>
+        <span>गायक की आवाज़ (वॉल्यूम):</span>
         <span id="vocalVolVal">100%</span>
       </label>
       <div class="btn-step-row">
-        <button class="btn-step" id="btnVocalDown">-50% Volume</button>
+        <button class="btn-step" id="btnVocalDown">-50% कम</button>
         <div class="val-display" id="vocalNumDisplay">100%</div>
-        <button class="btn-step" id="btnVocalUp">+50% Volume</button>
+        <button class="btn-step" id="btnVocalUp">+50% बढ़ाएँ</button>
       </div>
     </div>
 
     <!-- Karaoke Music Volume Slider -->
     <div class="control-group">
       <label for="musicVol">
-        <span>Karaoke Music Volume:</span>
+        <span>म्यूज़िक ट्रैक वॉल्यूम:</span>
         <span id="musicVolVal">70%</span>
       </label>
-      <input type="range" id="musicVol" min="10" max="100" step="5" value="70">
+      <input type="range" id="musicVol" min="0" max="100" step="5" value="70">
     </div>
 
-    <!-- Grand Concert Hall Reverb Slider (0% to 100%) -->
+    <!-- Grand Concert Hall Reverb Slider -->
     <div class="control-group">
       <label for="echoRange">
-        <span>Grand Concert Hall (Ghazal Reverb):</span>
-        <span id="echoVal">35%</span>
+        <span>हॉल गूँज (ग़ज़ल इको / रीवर्ब):</span>
+        <span id="echoVal">30%</span>
       </label>
-      <input type="range" id="echoRange" min="0" max="100" step="5" value="35">
+      <input type="range" id="echoRange" min="0" max="100" step="5" value="30">
     </div>
 
     <!-- Rhythm Sync / Vocal Offset -->
     <div class="control-group">
       <label>
-        <span>Rhythm Sync (Vocal Offset):</span>
-        <span id="offsetVal">220 ms</span>
+        <span>ताल मिलाव (Vocal Delay Sync):</span>
+        <span id="offsetVal">0 ms</span>
       </label>
       <div class="btn-step-row">
         <button class="btn-step" id="btnOffsetDown100">-100</button>
         <button class="btn-step" id="btnOffsetDown10">-10</button>
-        <div class="val-display" id="offsetNumDisplay">220 ms</div>
+        <div class="val-display" id="offsetNumDisplay">0 ms</div>
         <button class="btn-step" id="btnOffsetUp10">+10</button>
         <button class="btn-step" id="btnOffsetUp100">+100</button>
       </div>
     </div>
 
     <div class="timer" id="timeDisp">00:00</div>
-    <div class="status-text" id="statusText">Choose your track file above to begin.</div>
+    <div class="status-text" id="statusText">ऊपर से कराओके ट्रैक चुनें।</div>
 
     <!-- Main Action Buttons -->
     <div class="btn-row">
-      <button class="btn btn-rec" id="startBtn" disabled>Start Recording</button>
-      <button class="btn btn-stop" id="stopBtn" disabled>Stop</button>
+      <button class="btn btn-rec" id="startBtn" disabled>गाना शुरू करें (Rec)</button>
+      <button class="btn btn-stop" id="stopBtn" disabled>रोकें (Stop)</button>
     </div>
 
     <div class="tip-box">
-      Tip: Auto-Tune automatically corrects your pitch to the nearest chromatic scale notes during mixing. Pre-recorded vocals can also be loaded directly.
+      सुझाव: हेडफ़ोन लगाने पर 'वायर्ड इयरफ़ोन' मोड ऑन करें। मोबाइल स्पीकर पर Anti-Bleed फ़ीचर आपकी आवाज़ और ट्रैक को साफ़ अलग रखेगा।
     </div>
 
     <!-- Mixing Section -->
     <section class="preview-box" id="mixSection">
-      <button class="btn btn-mix" id="mixBtn">Mix Track & Vocals</button>
+      <button class="btn btn-mix" id="mixBtn">म्यूज़िक और आवाज़ को मिक्स करें</button>
       
       <div id="readySection" style="display:none; margin-top:12px;">
         <audio id="finalAudioPlayer" controls></audio>
         <div class="btn-row" style="margin-top:10px;">
-          <button class="btn btn-action" id="downloadBtn">Download MP3 Song</button>
-          <button class="btn btn-action" id="shareBtn" style="background:#8b5cf6;">Share Audio</button>
+          <button class="btn btn-action" id="downloadBtn">MP3 गाना डाउनलोड करें</button>
+          <button class="btn btn-action" id="shareBtn" style="background:#8b5cf6;">शेयर करें (WhatsApp)</button>
         </div>
       </div>
     </section>
@@ -222,9 +219,10 @@
     let mediaRecorder = null;
     let vocalChunks = [];
     
+    let liveMusicSource = null;
+    let previewSource = null;
     let isPreviewing = false;
-    let selectedTrackFile = null;
-    let selectedVocalFile = null;
+    let karaokeBuffer = null;
     let rawVocalBlob = null;
     let finalMp3Blob = null;
 
@@ -235,7 +233,7 @@
     let currentPitch = 0;
     let currentVocalVol = 100;
     let currentMusicVol = 70;
-    let currentOffset = 220;
+    let currentOffset = 0; // ज़ीरो-लेटेंसी स्टार्ट के लिए डिफ़ॉल्ट 0ms
     let currentAutoTune = 0;
 
     let currentBass = 0;
@@ -244,7 +242,6 @@
 
     const fileInput = document.getElementById('karaokeFile');
     const vocalFileInput = document.getElementById('vocalFile');
-    const karaokeAudioPlayer = document.getElementById('karaokeAudioPlayer');
     const startBtn = document.getElementById('startBtn');
     const stopBtn = document.getElementById('stopBtn');
     const mixBtn = document.getElementById('mixBtn');
@@ -282,48 +279,62 @@
     const trebleVal = document.getElementById('trebleVal');
     const eqStatusDisp = document.getElementById('eqStatusDisp');
 
-    // 1. Karaoke Track Upload
-    fileInput.addEventListener('change', function() {
-      if (!this.files || this.files.length === 0) return;
+    function getAudioContext() {
+      if (!sharedAudioCtx) {
+        sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      return sharedAudioCtx;
+    }
 
-      selectedTrackFile = this.files[0];
-      const objectUrl = URL.createObjectURL(selectedTrackFile);
-      
-      karaokeAudioPlayer.src = objectUrl;
-      karaokeAudioPlayer.volume = currentMusicVol / 100;
-      
-      statusText.innerText = "Track Loaded: " + selectedTrackFile.name.substring(0, 22) + "... Ready!";
-      startBtn.disabled = false;
-      previewScaleBtn.disabled = false;
+    // 1. Karaoke Track Upload & Decode
+    fileInput.addEventListener('change', async function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
 
-      if (rawVocalBlob || selectedVocalFile) {
-        mixSection.style.display = 'block';
+      stopScalePreview();
+      statusText.innerText = "म्यूज़िक ट्रैक लोड हो रहा है...";
+
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const ctx = getAudioContext();
+        if (ctx.state === 'suspended') await ctx.resume();
+        karaokeBuffer = await ctx.decodeAudioData(arrayBuffer);
+        startBtn.disabled = false;
+        previewScaleBtn.disabled = false;
+        statusText.innerText = "ट्रैक तैयार है! 'गाना शुरू करें' या स्केल चेक करें।";
+
+        if (rawVocalBlob) {
+          mixSection.style.display = 'block';
+        }
+      } catch (err) {
+        statusText.innerText = "ऑडियो लोड करने में त्रुटि: " + err.message;
       }
     });
 
     // 2. Pre-recorded Vocals Upload (Optional)
-    vocalFileInput.addEventListener('change', function() {
-      if (!this.files || this.files.length === 0) return;
+    vocalFileInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
 
-      selectedVocalFile = this.files[0];
-      rawVocalBlob = selectedVocalFile;
-
-      statusText.innerText = "Vocals Loaded: " + selectedVocalFile.name.substring(0, 22) + "... Ready to Mix!";
-      mixSection.style.display = 'block';
-      readySection.style.display = 'none';
+      rawVocalBlob = file;
+      statusText.innerText = "स्वर फ़ाइल लोड हुई: " + file.name.substring(0, 20) + "... मिक्सिंग के लिए तैयार!";
+      if (karaokeBuffer) {
+        mixSection.style.display = 'block';
+        readySection.style.display = 'none';
+      }
     });
 
     // Auto-Tune Slider
     autoTuneRange.oninput = () => {
       currentAutoTune = parseInt(autoTuneRange.value);
       if (currentAutoTune === 0) {
-        autoTuneVal.innerText = "0% (Off)";
+        autoTuneVal.innerText = "0% (बंद)";
         autoTuneVal.style.color = "#94a3b8";
       } else if (currentAutoTune <= 45) {
-        autoTuneVal.innerText = currentAutoTune + "% (Natural)";
+        autoTuneVal.innerText = currentAutoTune + "% (नेचुरल)";
         autoTuneVal.style.color = "#38bdf8";
       } else {
-        autoTuneVal.innerText = currentAutoTune + "% (Hard Tune)";
+        autoTuneVal.innerText = currentAutoTune + "% (हार्ड ट्यून)";
         autoTuneVal.style.color = "#10b981";
       }
     };
@@ -339,9 +350,9 @@
       trebleVal.innerText = (currentTreble > 0 ? "+" : "") + currentTreble + " dB";
 
       if (currentBass === 0 && currentMid === 0 && currentTreble === 0) {
-        eqStatusDisp.innerText = "Flat (0 dB)";
+        eqStatusDisp.innerText = "सामान्य (Flat)";
       } else {
-        eqStatusDisp.innerText = "Custom Studio EQ";
+        eqStatusDisp.innerText = "स्टूडियो EQ सक्रिय";
       }
     }
     eqBass.oninput = updateEqDisplays;
@@ -350,9 +361,10 @@
 
     pitchSemi.oninput = () => {
       currentPitch = parseInt(pitchSemi.value);
-      const text = currentPitch === 0 ? "Original (0 st)" : (currentPitch > 0 ? "+" + currentPitch + " st (High)" : currentPitch + " st (Low)");
-      pitchVal.innerText = text;
-      karaokeAudioPlayer.playbackRate = Math.pow(2, currentPitch / 12);
+      pitchVal.innerText = currentPitch === 0 ? "ओरिजिनल (0 st)" : (currentPitch > 0 ? "+" + currentPitch + " st (हाई)" : currentPitch + " st (लो)");
+      if (previewSource && isPreviewing) {
+        previewSource.detune.value = currentPitch * 100;
+      }
     };
 
     function updateVocalVol(val) {
@@ -366,7 +378,9 @@
     musicVol.oninput = () => {
       currentMusicVol = parseInt(musicVol.value);
       musicVolVal.innerText = currentMusicVol + "%";
-      karaokeAudioPlayer.volume = currentMusicVol / 100;
+      if (previewSource && previewSource.gainNode) {
+        previewSource.gainNode.gain.value = currentMusicVol / 100;
+      }
     };
 
     echoRange.oninput = () => {
@@ -374,7 +388,7 @@
     };
 
     function updateOffset(val) {
-      currentOffset = Math.max(0, Math.min(10000, val));
+      currentOffset = Math.max(-1000, Math.min(5000, val));
       offsetVal.innerText = currentOffset + " ms";
       offsetNumDisplay.innerText = currentOffset + " ms";
     }
@@ -385,56 +399,67 @@
 
     earphoneToggle.addEventListener('change', () => {
       if (earphoneToggle.checked) {
-        modeStatusText.innerText = "Mode: Wired Earphones (Pure Studio)";
+        modeStatusText.innerText = "मोड: वायर्ड इयरफ़ोन (Pure Studio)";
         modeStatusText.style.color = "#34d399";
       } else {
-        modeStatusText.innerText = "Mode: Mobile Speaker (Anti-Bleed)";
+        modeStatusText.innerText = "मोड: मोबाइल स्पीकर (Anti-Bleed)";
         modeStatusText.style.color = "#cbd5e1";
       }
     });
 
-    function getAudioContext() {
-      if (!sharedAudioCtx) {
-        sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      return sharedAudioCtx;
-    }
-
     function stopScalePreview() {
-      karaokeAudioPlayer.pause();
-      karaokeAudioPlayer.currentTime = 0;
+      if (previewSource) {
+        try { previewSource.stop(); } catch(e){}
+        previewSource = null;
+      }
       isPreviewing = false;
-      previewScaleBtn.innerText = "Test Scale (Play Track)";
+      previewScaleBtn.innerText = "स्केल चेक करें (म्यूज़िक चलाएँ)";
     }
 
-    previewScaleBtn.addEventListener('click', () => {
+    previewScaleBtn.addEventListener('click', async () => {
+      const ctx = getAudioContext();
+      if (ctx.state === 'suspended') await ctx.resume();
+
       if (isPreviewing) {
         stopScalePreview();
-        statusText.innerText = "Scale test stopped.";
+        statusText.innerText = "स्केल टेस्ट रोका गया।";
         return;
       }
 
-      karaokeAudioPlayer.currentTime = 0;
-      karaokeAudioPlayer.play();
-      isPreviewing = true;
-      previewScaleBtn.innerText = "Stop Scale Test";
-      statusText.innerText = "Playing track... Rehearse your vocals.";
+      if (!karaokeBuffer) return;
 
-      karaokeAudioPlayer.onended = () => stopScalePreview();
+      previewSource = ctx.createBufferSource();
+      previewSource.buffer = karaokeBuffer;
+      previewSource.detune.value = currentPitch * 100;
+
+      const previewGain = ctx.createGain();
+      previewGain.gain.value = currentMusicVol / 100;
+      previewSource.gainNode = previewGain;
+
+      previewSource.connect(previewGain);
+      previewGain.connect(ctx.destination);
+
+      previewSource.onended = () => stopScalePreview();
+
+      previewSource.start(0);
+      isPreviewing = true;
+      previewScaleBtn.innerText = "टेस्ट रोकें";
+      statusText.innerText = "म्यूज़िक बज रहा है... अपने सुर का रियाज़ करें।";
     });
 
-    // Recording Engine
+    // 🌟 एकदम सटीक माइक व म्यूजिक सिंक्रोनाइज़्ड रिकॉर्डिंग इंजन (Zero Delay)
     startBtn.addEventListener('click', async () => {
       stopScalePreview();
       vocalChunks = [];
       rawVocalBlob = null;
-      selectedVocalFile = null;
 
       try {
         const ctx = getAudioContext();
         if (ctx.state === 'suspended') await ctx.resume();
 
         const isEarphones = earphoneToggle.checked;
+        
+        // मोबाइल स्पीकर मोड में प्राकृतिक आवाज़ के लिए मानक सेटिंग्स
         const micConstraints = {
           audio: isEarphones ? {
             echoCancellation: false,
@@ -442,7 +467,7 @@
             autoGainControl: false,
             channelCount: 1
           } : {
-            echoCancellation: true,
+            echoCancellation: false, // वोकल को कटने से बचाने के लिए फ़िल्टर ऑफ
             noiseSuppression: false,
             autoGainControl: true,
             channelCount: 1
@@ -451,106 +476,128 @@
 
         micStream = await navigator.mediaDevices.getUserMedia(micConstraints);
 
-        // Meter setup
-        const srcNode = ctx.createMediaStreamSource(micStream);
+        // शुद्ध ऑडियो विज़ुअलाइज़र (माइक आवाज़ मीटर)
+        const micSource = ctx.createMediaStreamSource(micStream);
         const analyser = ctx.createAnalyser();
-        analyser.fftSize = 256;
-        srcNode.connect(analyser);
+        analyser.fftSize = 128;
+        micSource.connect(analyser);
 
-        const dataArr = new Uint8Array(analyser.frequencyBinCount);
-        function drawMeter() {
-          analyser.getByteFrequencyData(dataArr);
+        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+        function updateMeter() {
+          analyser.getByteFrequencyData(dataArray);
           let sum = 0;
-          for (let i = 0; i < dataArr.length; i++) sum += dataArr[i];
-          const avg = sum / dataArr.length;
-          meterFill.style.width = Math.min(100, (avg / 128) * 100) + '%';
-          meterAnimId = requestAnimationFrame(drawMeter);
+          for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+          let average = sum / dataArray.length;
+          let pct = Math.min(100, Math.round((average / 110) * 100));
+          meterFill.style.width = pct + '%';
+          meterAnimId = requestAnimationFrame(updateMeter);
         }
-        drawMeter();
+        updateMeter();
 
-        const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : (MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4' : '');
+        let mime = '';
+        const types = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/aac'];
+        for (let t of types) {
+          if (MediaRecorder.isTypeSupported(t)) { mime = t; break; }
+        }
+
         mediaRecorder = mime ? new MediaRecorder(micStream, { mimeType: mime }) : new MediaRecorder(micStream);
 
-        mediaRecorder.ondataavailable = e => {
+        mediaRecorder.ondataavailable = (e) => {
           if (e.data && e.data.size > 0) vocalChunks.push(e.data);
         };
 
         mediaRecorder.onstop = () => {
+          cancelAnimationFrame(meterAnimId);
+          meterFill.style.width = '0%';
+
+          if (vocalChunks.length === 0) {
+            alert("माइक से कोई आवाज़ रिकॉर्ड नहीं हुई!");
+            return;
+          }
+
           rawVocalBlob = new Blob(vocalChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
-          statusText.innerText = "Recording finished! Now click 'Mix Track & Vocals'.";
           mixSection.style.display = 'block';
           readySection.style.display = 'none';
+          statusText.innerText = "रिकॉर्डिंग पूरी हुई! अब 'म्यूज़िक और आवाज़ को मिक्स करें' पर क्लिक करें।";
+          mixBtn.focus();
         };
 
-        mediaRecorder.start(100);
+        // म्यूज़िक ट्रैक को ठीक उसी मिलीसेकंड पर शुरू करना
+        liveMusicSource = ctx.createBufferSource();
+        liveMusicSource.buffer = karaokeBuffer;
+        liveMusicSource.detune.value = currentPitch * 100;
 
-        karaokeAudioPlayer.currentTime = 0;
-        await karaokeAudioPlayer.play();
+        const liveMusicGain = ctx.createGain();
+        liveMusicGain.gain.value = currentMusicVol / 100;
+
+        liveMusicSource.connect(liveMusicGain);
+        liveMusicGain.connect(ctx.destination);
+
+        liveMusicSource.onended = () => {
+          statusText.innerText = "म्यूज़िक समाप्त हुआ। रिकॉर्डिंग रोक दी गई।";
+          stopRecordingProcess();
+        };
+
+        // दोनों को बिना अंतराल के एक साथ शुरू करें
+        mediaRecorder.start(100);
+        liveMusicSource.start(0);
 
         startBtn.disabled = true;
+        previewScaleBtn.disabled = true;
         stopBtn.disabled = false;
         fileInput.disabled = true;
         vocalFileInput.disabled = true;
-        previewScaleBtn.disabled = true;
+        mixSection.style.display = 'none';
+        readySection.style.display = 'none';
 
         secondsElapsed = 0;
         timeDisp.innerText = "00:00";
+        clearInterval(timerInterval);
         timerInterval = setInterval(() => {
           secondsElapsed++;
-          const m = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
-          const s = String(secondsElapsed % 60).padStart(2, '0');
-          timeDisp.innerText = m + ":" + s;
+          let m = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+          let s = String(secondsElapsed % 60).padStart(2, '0');
+          timeDisp.innerText = `${m}:${s}`;
         }, 1000);
 
-        statusText.innerText = "Recording in progress... Sing with rhythm!";
+        statusText.innerText = "रिकॉर्डिंग जारी है... माइक में गाइए!";
       } catch (err) {
-        alert("Microphone Access Error: " + err.message);
-        statusText.innerText = "Error accessing microphone.";
+        alert("माइक्रोफ़ोन त्रुटि: " + err.message);
+        statusText.innerText = "माइक की अनुमति नहीं मिल सकी।";
+        startBtn.disabled = false;
+        previewScaleBtn.disabled = false;
+        stopBtn.disabled = true;
       }
     });
 
-    stopBtn.addEventListener('click', () => {
+    function stopRecordingProcess() {
+      if (liveMusicSource) {
+        try { liveMusicSource.stop(); } catch(e){}
+        liveMusicSource = null;
+      }
       if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        try { mediaRecorder.requestData(); } catch(e){}
         mediaRecorder.stop();
       }
       if (micStream) {
-        micStream.getTracks().forEach(t => t.stop());
+        micStream.getTracks().forEach(track => track.stop());
         micStream = null;
       }
-      if (meterAnimId) {
-        cancelAnimationFrame(meterAnimId);
-        meterFill.style.width = '0%';
-      }
       clearInterval(timerInterval);
-
-      karaokeAudioPlayer.pause();
-      karaokeAudioPlayer.currentTime = 0;
-
+      cancelAnimationFrame(meterAnimId);
       startBtn.disabled = false;
+      previewScaleBtn.disabled = false;
       stopBtn.disabled = true;
       fileInput.disabled = false;
       vocalFileInput.disabled = false;
-      previewScaleBtn.disabled = false;
-    });
-
-    // Impulse Response for Grand Concert Hall Reverb
-    function createGrandHallImpulse(ctx, duration = 2.4, decay = 2.2) {
-      const rate = ctx.sampleRate;
-      const length = rate * duration;
-      const impulse = ctx.createBuffer(2, length, rate);
-      const left = impulse.getChannelData(0);
-      const right = impulse.getChannelData(1);
-
-      for (let i = 0; i < length; i++) {
-        const n = i / length;
-        const e = Math.exp(-n * decay);
-        left[i] = ((Math.random() * 2) - 1) * e;
-        right[i] = ((Math.random() * 2) - 1) * e;
-      }
-      return impulse;
     }
 
-    // 🌟 Auto-Tune Chromatic Pitch Correction Processing
+    stopBtn.addEventListener('click', () => {
+      statusText.innerText = "रिकॉर्डिंग रोकी गई।";
+      stopRecordingProcess();
+    });
+
+    // ऑटो-ट्यून फ़ंक्शन
     function applyAutoTune(vocalBuffer, strengthPercent) {
       if (strengthPercent <= 0) return vocalBuffer;
 
@@ -565,8 +612,8 @@
       const hopSize = 512;
       const totalSamples = vocalBuffer.length;
       const factor = strengthPercent / 100;
-
       const A4 = 440;
+
       function getTargetFreq(detectedFreq) {
         if (detectedFreq < 55 || detectedFreq > 1200) return detectedFreq;
         const midi = Math.round(69 + 12 * Math.log2(detectedFreq / A4));
@@ -577,8 +624,8 @@
       function detectPitch(buffer, start) {
         let maxCorr = 0;
         let bestLag = -1;
-        const minLag = Math.floor(sr / 1000); // 1000 Hz
-        const maxLag = Math.floor(sr / 65);   // 65 Hz
+        const minLag = Math.floor(sr / 1000);
+        const maxLag = Math.floor(sr / 65);
 
         for (let lag = minLag; lag <= maxLag; lag++) {
           let corr = 0;
@@ -595,7 +642,6 @@
         return bestLag > 0 ? (sr / bestLag) : 0;
       }
 
-      // Smooth Pitch Shift on Primary Channel
       const primary = channelData[0];
       for (let pos = 0; pos < totalSamples - frameSize; pos += hopSize) {
         const detected = detectPitch(primary, pos);
@@ -619,52 +665,59 @@
       return vocalBuffer;
     }
 
-    // 🌟 Master Mixing Engine
-    mixBtn.addEventListener('click', async () => {
-      if (!selectedTrackFile) {
-        alert("Please select a karaoke backing track first!");
-        return;
+    // ग्रैंड कॉन्सर्ट हॉल रीवर्ब
+    function createGrandHallImpulse(ctx, duration = 2.2, decay = 2.0) {
+      const rate = ctx.sampleRate;
+      const length = rate * duration;
+      const impulse = ctx.createBuffer(2, length, rate);
+      const left = impulse.getChannelData(0);
+      const right = impulse.getChannelData(1);
+
+      for (let i = 0; i < length; i++) {
+        const n = i / length;
+        const e = Math.exp(-n * decay);
+        left[i] = ((Math.random() * 2) - 1) * e;
+        right[i] = ((Math.random() * 2) - 1) * e;
       }
-      if (!rawVocalBlob) {
-        alert("Please record vocals or select a pre-recorded vocal file!");
+      return impulse;
+    }
+
+    // 🌟 मास्टर मिक्सिंग इंजन
+    mixBtn.addEventListener('click', async () => {
+      if (!karaokeBuffer || !rawVocalBlob) {
+        alert("कृपया म्यूज़िक और स्वर फ़ाइल सुनिश्चित करें।");
         return;
       }
 
-      statusText.innerText = "Decoding audio tracks... Please wait.";
+      statusText.innerText = "स्टूडियो मिक्सिंग शुरू हो रही है...";
       mixBtn.disabled = true;
 
       try {
         const actx = getAudioContext();
         if (actx.state === 'suspended') await actx.resume();
 
-        // 1. Decode Backing Track
-        const trackArrBuf = await selectedTrackFile.arrayBuffer();
-        const origMusicBuffer = await actx.decodeAudioData(trackArrBuf);
-
-        // 2. Decode Vocals
         const vocalArrBuf = await rawVocalBlob.arrayBuffer();
         let vocalBuffer = await actx.decodeAudioData(vocalArrBuf);
 
-        // 🌟 Apply Auto-Tune Processing (if enabled)
         if (currentAutoTune > 0) {
-          statusText.innerText = `Applying Studio Auto-Tune (${currentAutoTune}%)...`;
+          statusText.innerText = `स्टूडियो ऑटो-ट्यून लगाया जा रहा है (${currentAutoTune}%)...`;
           vocalBuffer = applyAutoTune(vocalBuffer, currentAutoTune);
         }
 
-        statusText.innerText = "Rendering Reverb, Studio EQ & Volumes...";
+        statusText.innerText = "रीवर्ब और इक्वलाइज़र मिक्स हो रहे हैं...";
 
         const sampleRate = 44100;
         const offsetSec = currentOffset / 1000;
-        const totalDuration = Math.max(origMusicBuffer.duration, vocalBuffer.duration + offsetSec) + 1.5;
+        const totalDuration = Math.max(karaokeBuffer.duration, vocalBuffer.duration + Math.abs(offsetSec)) + 1.0;
         const totalLength = Math.ceil(totalDuration * sampleRate);
 
         const offCtx = new OfflineAudioContext(2, totalLength, sampleRate);
 
-        // 3. Setup Backing Track Node
+        // म्यूज़िक ट्रैक
         const musicSource = offCtx.createBufferSource();
-        musicSource.buffer = origMusicBuffer;
+        musicSource.buffer = karaokeBuffer;
         if (currentPitch !== 0) {
-          musicSource.playbackRate.value = Math.pow(2, currentPitch / 12);
+          musicSource.detune.value = currentPitch * 100;
         }
 
         const musicGain = offCtx.createGain();
@@ -672,14 +725,14 @@
         musicSource.connect(musicGain);
         musicGain.connect(offCtx.destination);
 
-        // 4. Setup Vocal Node with 3-Band Studio EQ
+        // वोकल्स नोड
         const vocalSource = offCtx.createBufferSource();
         vocalSource.buffer = vocalBuffer;
 
         const vocalGain = offCtx.createGain();
         vocalGain.gain.value = currentVocalVol / 100;
 
-        // 3-Band Biquad Filters (EQ)
+        // 3-बैंड EQ
         const bassFilter = offCtx.createBiquadFilter();
         bassFilter.type = 'lowshelf';
         bassFilter.frequency.value = 250;
@@ -696,20 +749,19 @@
         trebleFilter.frequency.value = 4000;
         trebleFilter.gain.value = currentTreble;
 
-        // Connect Vocal through EQ
         vocalSource.connect(bassFilter);
         bassFilter.connect(midFilter);
         midFilter.connect(trebleFilter);
         trebleFilter.connect(vocalGain);
 
-        // 5. Setup Grand Concert Hall Convolution Reverb
+        // रीवर्ब
         const echoPercent = parseInt(echoRange.value) / 100;
         if (echoPercent > 0) {
           const convolver = offCtx.createConvolver();
-          convolver.buffer = createGrandHallImpulse(offCtx, 2.4, 2.2);
+          convolver.buffer = createGrandHallImpulse(offCtx, 2.2, 2.0);
 
           const wetGain = offCtx.createGain();
-          wetGain.gain.value = echoPercent * 0.75;
+          wetGain.gain.value = echoPercent * 0.7;
 
           const dryGain = offCtx.createGain();
           dryGain.gain.value = 1.0;
@@ -724,16 +776,16 @@
           vocalGain.connect(offCtx.destination);
         }
 
-        // Start Sources
         musicSource.start(0);
-        vocalSource.start(offsetSec);
+        if (offsetSec >= 0) {
+          vocalSource.start(offsetSec);
+        } else {
+          vocalSource.start(0, Math.abs(offsetSec));
+        }
 
-        // Render Mix
         const renderedBuffer = await offCtx.startRendering();
 
-        statusText.innerText = "Encoding high quality MP3 (192 kbps)...";
-
-        // 6. Encode to MP3 using lamejs
+        statusText.innerText = "MP3 एनकोडिंग हो रही है (192 kbps)...";
         finalMp3Blob = await encodeMp3Blob(renderedBuffer);
 
         const mixedAudioUrl = URL.createObjectURL(finalMp3Blob);
@@ -741,10 +793,10 @@
         
         readySection.style.display = 'block';
         mixSection.scrollIntoView({ behavior: 'smooth' });
-        statusText.innerText = "✓ Song mixed with Grand Hall & Auto-Tune! Play or Download below.";
+        statusText.innerText = "✓ गाना तैयार है! नीचे सुनें, डाउनलोड करें या शेयर करें।";
       } catch (err) {
-        alert("Mixing Error: " + err.message);
-        statusText.innerText = "Mixing failed. Check audio files.";
+        alert("मिक्सिंग त्रुटि: " + err.message);
+        statusText.innerText = "मिक्सिंग पूरी नहीं हो सकी।";
       } finally {
         mixBtn.disabled = false;
       }
@@ -787,33 +839,40 @@
       });
     }
 
-    // Download Button
+    // 🌟 डाउनलोड बटन (Direct Anchor Download जो मोबाइल में 100% काम करता है)
     downloadBtn.addEventListener('click', () => {
       if (!finalMp3Blob) return;
+      const url = URL.createObjectURL(finalMp3Blob);
       const a = document.createElement('a');
-      a.href = URL.createObjectURL(finalMp3Blob);
-      a.download = `Studio_Master_Song_${Date.now()}.mp3`;
+      a.style.display = 'none';
+      a.href = url;
+      a.download = `Karaoke_Song_${Date.now()}.mp3`;
       document.body.appendChild(a);
       a.click();
-      document.body.removeChild(a);
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        statusText.innerText = "✓ गाना सफलतापूर्वक डाउनलोड हो गया!";
+      }, 500);
     });
 
-    // Share Button
+    // 🌟 शेयर बटन (WhatsApp एवं अन्य ऐप्स पर सीधे शेयरिंग)
     shareBtn.addEventListener('click', async () => {
       if (!finalMp3Blob) return;
-      const file = new File([finalMp3Blob], "Karaoke_Master_Song.mp3", { type: "audio/mp3" });
+      const file = new File([finalMp3Blob], `Karaoke_Song_${Date.now()}.mp3`, { type: "audio/mp3" });
+      
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         try {
           await navigator.share({
-            title: "Karaoke Studio Master Song",
-            text: "Listen to my latest recorded karaoke song with Grand Hall & Auto-Tune!",
+            title: "Karaoke Studio Song",
+            text: "मेरा नया रिकॉर्ड किया गया कराओके गाना सुनें!",
             files: [file]
           });
-        } catch (e) {
-          console.log("Share skipped/cancelled", e);
-        }
+        } catch (e) {}
       } else {
-        alert("Web Share API is not supported on this browser. Use Download instead.");
+        // यदि ब्राउज़र फ़ाइल शेयर सपोर्ट न करे तो ऑटोमैटिक डाउनलोड कराकर बता देगा
+        downloadBtn.click();
+        alert("इस डिवाइस में डायरेक्ट शेयरिंग समर्थित नहीं है। गाना डाउनलोड कर दिया गया है, आप फ़ाइल मैनेजर या व्हाट्सएप से सीधे भेज सकते हैं।");
       }
     });
   </script>
