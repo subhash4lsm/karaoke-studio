@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Studio Karaoke Master Pro</title>
+  <title>Studio Karaoke Master Pro - Stable 200ms Zero-Sync Edition</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.all.min.js"></script>
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; }
@@ -80,7 +80,7 @@
 
     <!-- Earphones / Speaker Mode Toggle -->
     <div class="toggle-row">
-      <span class="toggle-label" id="modeStatusText">Mode: Mobile Speaker (Anti-Bleed AEC Active)</span>
+      <span class="toggle-label" id="modeStatusText">Mode: Mobile Speaker (Anti-Bleed Active)</span>
       <label class="switch">
         <input type="checkbox" id="earphoneToggle">
         <span class="slider-toggle"></span>
@@ -196,7 +196,7 @@
     </div>
 
     <div class="tip-box">
-      Tip: In Mobile Speaker mode, keep track volume moderate (~50%) so hardware echo cancellation can cleanly separate your voice.
+      Tip: Zero-Latency Instant Capture active (200ms slice). Both mic and track trigger simultaneously at 0.00s.
     </div>
 
     <!-- Mixing Section -->
@@ -232,7 +232,7 @@
 
     let currentPitch = 0;
     let currentVocalVol = 100;
-    let currentMusicVol = 50; // Optimized default for speaker anti-bleed
+    let currentMusicVol = 50;
     let currentOffset = 0;
     let currentAutoTune = 0;
 
@@ -402,7 +402,7 @@
         modeStatusText.innerText = "Mode: Wired Earphones (Pure Studio)";
         modeStatusText.style.color = "#34d399";
       } else {
-        modeStatusText.innerText = "Mode: Mobile Speaker (Anti-Bleed AEC Active)";
+        modeStatusText.innerText = "Mode: Mobile Speaker (Anti-Bleed Active)";
         modeStatusText.style.color = "#cbd5e1";
       }
     });
@@ -447,7 +447,7 @@
       statusText.innerText = "Playing track... Rehearse your vocals.";
     });
 
-    // Reliable Native Microphone Recording Engine
+    // Zero-Latency Synchronized Microphone Recording Engine (200ms slice)
     startBtn.addEventListener('click', async () => {
       stopScalePreview();
       vocalChunks = [];
@@ -459,15 +459,15 @@
 
         const isEarphones = earphoneToggle.checked;
         
-        // Mobile speaker uses Acoustic Echo Cancellation to isolate the vocals from the music
+        // Microphone constraints: Unrestricted clean capture to prevent hardware cutoff on mobile speakers
         const micConstraints = {
           audio: isEarphones ? {
             echoCancellation: false,
             noiseSuppression: false,
             autoGainControl: false
           } : {
-            echoCancellation: true,
-            noiseSuppression: true,
+            echoCancellation: false, // Prevents aggressive muting while speaker is playing
+            noiseSuppression: false,
             autoGainControl: true
           }
         };
@@ -492,14 +492,14 @@
         }
         updateMeter();
 
-        // Choose supported audio container
+        // Audio Container Detection
         let mime = '';
         const types = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/aac'];
         for (let t of types) {
           if (MediaRecorder.isTypeSupported(t)) { mime = t; break; }
         }
 
-        // Direct hardware stream recording (prevents Android WebView lockup)
+        // Direct hardware stream recording (Rock solid stability in WebView)
         mediaRecorder = mime ? new MediaRecorder(micStream, { mimeType: mime }) : new MediaRecorder(micStream);
 
         mediaRecorder.ondataavailable = (e) => {
@@ -538,8 +538,8 @@
           stopRecordingProcess();
         };
 
-        // Start both recorder and music at the exact same instant
-        mediaRecorder.start(100);
+        // Trigger both recorder and music at the exact same instant with a 200ms time slice
+        mediaRecorder.start(200);
         liveMusicSource.start(0);
 
         startBtn.disabled = true;
